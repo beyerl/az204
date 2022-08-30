@@ -16,6 +16,7 @@
 <li><a href="#create-azure-app-service-web-apps">Create Azure App Service web apps</a>
 <ul>
 <li><a href="#explore-azure-app-service">Explore Azure App Service</a></li>
+<li><a href="#scale-apps-in-azure-app-service">Scale apps in Azure App Service</a></li>
 </ul>
 </li>
 </ul>
@@ -313,6 +314,82 @@ For <a href="http://ASP.NET">ASP.NET</a> and <a href="http://ASP.NET">ASP.NET</a
 <h4 id="access-log-files">Access log files</h4>
 <p>If you configure the Azure Storage blobs option for a log type, you need a client tool that works with Azure Storage.</p>
 <p>For logs stored in the App Service file system, the easiest way is to download the ZIP file in the browser</p>
+<h3 id="configure-security-certificates">Configure security certificates</h3>
+<p>A certificate uploaded into an app is stored in a deployment unit that is bound to the app service plan’s resource group and region combination (internally called a <em>webspace</em>). This makes the certificate accessible to other apps in the same resource group and region combination.</p>
+<ul>
+<li>Create a free App Service managed certificate</li>
+<li>Purchase an App Service certificate</li>
+<li>Import a certificate from Key Vault</li>
+<li>Upload a private certificate</li>
+<li>Upload a public certificate: Public certificates are not used to secure custom domains, but you can load them into your code if you need them to access remote resources.</li>
+</ul>
+<h4 id="private-certificate-requirements">Private certificate requirements</h4>
+<p>The free <strong>App Service managed certificate</strong> and the <strong>App Service certificate</strong> already satisfy the requirements of App Service. If you want to use a private certificate in App Service, your certificate must meet the following requirements:</p>
+<ul>
+<li>Exported as a password-protected PFX file, encrypted using triple DES.</li>
+<li>Contains private key at least 2048 bits long</li>
+<li>Contains all intermediate certificates in the certificate chain</li>
+</ul>
+<p>To secure a custom domain in a TLS binding, the certificate has additional requirements:</p>
+<ul>
+<li>Contains an Extended Key Usage for server authentication (OID = 1.3.6.1.5.5.7.3.1)</li>
+<li>Signed by a trusted certificate authority</li>
+</ul>
+<h4 id="creating-a-free-managed-certificate">Creating a free managed certificate</h4>
+<p>To create custom TLS/SSL bindings or enable client certificates for your App Service app, your App Service plan must be in the <strong>Basic</strong>, <strong>Standard</strong>, <strong>Premium</strong>, or <strong>Isolated</strong> tier.</p>
+<p>It’s a TLS/SSL server certificate that’s fully managed by App Service and renewed continuously. You create the certificate and bind it to a custom domain, and let App Service do the rest.</p>
+<h4 id="import-an-app-service-certificate">Import an App Service Certificate</h4>
+<p>If you purchase an App Service Certificate from Azure, Azure manages the following tasks:</p>
+<ul>
+<li>Takes care of the purchase process from GoDaddy.</li>
+<li>Performs domain verification of the certificate.</li>
+<li>Maintains the certificate in Azure Key Vault.</li>
+<li>Manages certificate renewal.</li>
+<li>Synchronize the certificate automatically with the imported copies in App Service apps.</li>
+</ul>
+<h4 id="upload-a-private-certificate">Upload a private certificate</h4>
+<p>If your certificate authority gives you multiple certificates in the certificate chain, you need to merge the certificates in order. Then you can Export your merged TLS/SSL certificate with the private key that your certificate request was generated with.</p>
+<h4 id="enforce-https">Enforce HTTPS</h4>
+<p>By default, anyone can still access your app using HTTP. You can redirect all HTTP requests to the HTTPS port.<br>
+<img src="https://docs.microsoft.com/en-us/learn/wwl-azure/configure-web-app-settings/media/enforce-https.png" alt="Enabling HTTPS Only in your web app."></p>
+<h3 id="manage-app-features">Manage app features</h3>
+<p>Feature management is a modern software-development practice that decouples feature release from code deployment and enables quick changes to feature availability on demand. It uses a technique called feature flags (also known as feature toggles, feature switches, and so on) to dynamically administer a feature’s lifecycle.</p>
+<h4 id="basic-concepts">Basic concepts</h4>
+<ul>
+<li><strong>Feature flag</strong>: The state of the feature flag triggers whether the code block runs or not.</li>
+<li><strong>Feature manager</strong>: A feature manager is an application package that handles the lifecycle of all the feature flags in an application.</li>
+<li><strong>Filter</strong>: A filter is a rule for evaluating the state of a feature flag.</li>
+</ul>
+<p>An effective implementation of feature management consists of at least two components working in concert:</p>
+<ul>
+<li>An application that makes use of feature flags.</li>
+<li>A separate repository that stores the feature flags and their current states.</li>
+</ul>
+<h4 id="feature-flag-usage-in-code">Feature flag usage in code</h4>
+<pre><code>if (featureFlag) {
+    // Run the following code
+}
+</code></pre>
+<h4 id="feature-flag-declaration">Feature flag declaration</h4>
+<p>Each feature flag has two parts: a name and a list of one or more filters that are used to evaluate if a feature’s state is <em>on</em> (that is, when its value is <code>True</code>). A filter defines a use case for when a feature should be turned on.</p>
+<p>The feature manager supports <em>appsettings.json</em> as a configuration source for feature flags.</p>
+<h4 id="feature-flag-repository">Feature flag repository</h4>
+<p>To use feature flags effectively, you need to externalize all the feature flags used in an application. This approach allows you to change feature flag states without modifying and redeploying the application itself. Azure App Configuration is designed to be a centralized repository for feature flags.</p>
+<h2 id="scale-apps-in-azure-app-service">Scale apps in Azure App Service</h2>
+<h3 id="examine-autoscale-factors">Examine autoscale factors</h3>
+<h4 id="what-is-autoscaling">What is autoscaling?</h4>
+<p>Autoscaling is a cloud system or process that adjusts available resources based on the current demand. Autoscaling performs scaling <em>in and out</em>, as opposed to scaling <em>up and down</em>. Autoscaling can be triggered according to a schedule, or by assessing whether the system is running short on resources.</p>
+<h4 id="azure-app-service-autoscaling">Azure App Service Autoscaling</h4>
+<p>Autoscaling in Azure App Service monitors the resource metrics of a web app as it runs. It detects situations where additional resources are required to handle an increasing workload, and ensures those resources are available before the system becomes overloaded.</p>
+<h5 id="autoscaling-rules">Autoscaling rules</h5>
+<p>Autoscaling makes its decisions based on rules that you define. A rule specifies the threshold for a metric, and triggers an autoscale event when this threshold is crossed. Autoscaling can also deallocate resources when the workload has diminished.</p>
+<h4 id="when-should-you-consider-autoscaling">When should you consider autoscaling?</h4>
+<p>Autoscaling provides elasticity for your services. It’s a suitable solution when hosting any application when you can’t easily predict the workload in advance, or when the workload is likely to vary by date or time.</p>
+<p>Autoscaling improves availability and fault tolerance.</p>
+<p>Autoscaling works by adding or removing web servers. If your web apps perform resource-intensive processing as part of each request, then autoscaling might not be an effective approach. In these situations, manually scaling up may be necessary.</p>
+<p>Autoscaling isn’t the best approach to handling long-term growth. Autoscaling has an overhead associated with monitoring resources and determining whether to trigger a scaling event. In this scenario, if you can anticipate the rate of growth, manually scaling the system over time may be a more cost effective approach.</p>
+<p>The number of instances of a service is also a factor. The fewer the number of instances initially, the less capacity you have to handle an increasing workload while autoscaling spins up additional instances.</p>
+<p><a href="https://docs.microsoft.com/en-us/learn/modules/scale-apps-app-service/3-app-service-autoscale-conditions-rules">https://docs.microsoft.com/en-us/learn/modules/scale-apps-app-service/3-app-service-autoscale-conditions-rules</a></p>
 
     </div>
   </div>
