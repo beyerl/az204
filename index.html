@@ -16,6 +16,8 @@
 <li><a href="#create-azure-app-service-web-apps">Create Azure App Service web apps</a>
 <ul>
 <li><a href="#explore-azure-app-service">Explore Azure App Service</a></li>
+<li><a href="#examine-azure-app-service-plans">Examine Azure App Service plans</a></li>
+<li><a href="#deploy-to-app-service">Deploy to App Service</a></li>
 </ul>
 </li>
 </ul>
@@ -50,7 +52,53 @@ Applications run and scale with ease on both Windows and Linux-based environment
 <li>App Service on Linux is not supported on Shared pricing tier.</li>
 <li>You can’t mix Windows and Linux apps in the same App Service plan.</li>
 </ul>
-<p><a href="https://docs.microsoft.com/en-us/learn/modules/introduction-to-azure-app-service/3-azure-app-service-plans">https://docs.microsoft.com/en-us/learn/modules/introduction-to-azure-app-service/3-azure-app-service-plans</a></p>
+<h2 id="examine-azure-app-service-plans">Examine Azure App Service plans</h2>
+<p>In App Service, an app (Web Apps, API Apps, or Mobile Apps) always runs in an <em>App Service plan</em>. An App Service plan defines a set of compute resources for a web app to run. One or more apps can be configured to run on the same computing resources (or in the same App Service plan).</p>
+<p>Each App Service plan defines:</p>
+<ul>
+<li>Region (West US, East US, etc.)</li>
+<li>Number of VM instances</li>
+<li>Size of VM instances (Small, Medium, Large)</li>
+<li>Pricing tier (Free, Shared, Basic, Standard, Premium, PremiumV2, PremiumV3, Isolated)</li>
+</ul>
+<p>The <em>pricing tier</em> of an App Service plan determines what App Service features you get and how much you pay for the plan. There are a few categories of pricing tiers:</p>
+<ul>
+<li><strong>Shared compute</strong>: Both <strong>Free</strong> and <strong>Shared</strong> share the resource pools of your apps with the apps of other customers. These tiers allocate CPU quotas to each app that runs on the shared resources, and the resources can’t scale out.</li>
+<li><strong>Dedicated compute</strong>: The <strong>Basic</strong>, <strong>Standard</strong>, <strong>Premium</strong>, <strong>PremiumV2</strong>, and <strong>PremiumV3</strong> tiers run apps on dedicated Azure VMs. Only apps in the same App Service plan share the same compute resources. The higher the tier, the more VM instances are available to you for scale-out.</li>
+<li><strong>Isolated</strong>: This tier runs dedicated Azure VMs on dedicated Azure Virtual Networks. It provides network isolation on top of compute isolation to your apps. It provides the maximum scale-out capabilities.</li>
+<li><strong>Consumption:</strong> This tier is only available to <em>function apps</em>. It scales the functions dynamically depending on workload.</li>
+</ul>
+<h3 id="how-does-my-app-run-and-scale">How does my app run and scale?</h3>
+<p>The App Service plan is the <strong>scale unit</strong> of the App Service apps:</p>
+<ul>
+<li>An app runs on all the VM instances configured in the App Service plan.</li>
+<li>If multiple apps are in the same App Service plan, they all share the same VM instances.</li>
+<li>If you have multiple deployment slots for an app, all deployment slots also run on the same VM instances.</li>
+<li>If you enable diagnostic logs, perform backups, or run WebJobs, they also use CPU cycles and memory on these VM instances.</li>
+</ul>
+<h3 id="what-if-my-app-needs-more-capabilities-or-features">What if my app needs more capabilities or features?</h3>
+<p>Isolate your app into a new App Service plan when:</p>
+<ul>
+<li>The app is resource-intensive.</li>
+<li>You want to scale the app independently from the other apps in the existing plan.</li>
+<li>The app needs resource in a different geographical region.</li>
+</ul>
+<h2 id="deploy-to-app-service">Deploy to App Service</h2>
+<h3 id="automated-deployment">Automated deployment</h3>
+<p>Azure supports automated deployment directly from several sources. The following options are available:</p>
+<ul>
+<li>Azure DevOps</li>
+<li>GitHub</li>
+<li>Bitbucket</li>
+</ul>
+<h3 id="manual-deployment">Manual deployment</h3>
+<p>There are a few options that you can use to manually push your code to Azure:</p>
+<ul>
+<li><strong>Git</strong>: App Service web apps feature a Git URL that you can add as a remote repository.</li>
+<li><strong>CLI</strong>: <code>webapp up</code> is a feature of the <code>az</code> command-line interface that packages your app and deploys it.</li>
+<li><strong>Zip deploy</strong>: Use <code>curl</code> or a similar HTTP utility to send a ZIP of your application files to App Service.</li>
+<li><strong>FTP/S</strong>: FTP or FTPS is a traditional way of pushing your code to many hosting environments, including App Service.</li>
+</ul>
 
     </div>
   </div>
