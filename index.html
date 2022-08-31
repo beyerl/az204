@@ -389,7 +389,43 @@ For <a href="http://ASP.NET">ASP.NET</a> and <a href="http://ASP.NET">ASP.NET</a
 <p>Autoscaling works by adding or removing web servers. If your web apps perform resource-intensive processing as part of each request, then autoscaling might not be an effective approach. In these situations, manually scaling up may be necessary.</p>
 <p>Autoscaling isn’t the best approach to handling long-term growth. Autoscaling has an overhead associated with monitoring resources and determining whether to trigger a scaling event. In this scenario, if you can anticipate the rate of growth, manually scaling the system over time may be a more cost effective approach.</p>
 <p>The number of instances of a service is also a factor. The fewer the number of instances initially, the less capacity you have to handle an increasing workload while autoscaling spins up additional instances.</p>
-<p><a href="https://docs.microsoft.com/en-us/learn/modules/scale-apps-app-service/3-app-service-autoscale-conditions-rules">https://docs.microsoft.com/en-us/learn/modules/scale-apps-app-service/3-app-service-autoscale-conditions-rules</a></p>
+<h3 id="identify-autoscale-factors">Identify autoscale factors</h3>
+<p>Autoscaling enables you to specify the conditions under which a web app should be scaled out, and back in again:</p>
+<ul>
+<li>Scale based on a metric, such as the length of the disk queue, or the number of HTTP requests awaiting processing.</li>
+<li>Scale to a specific instance count according to a schedule. For example, you can arrange to scale out at a particular time of day, or on a specific date or day of the week. You also specify an end date, and the system will scale back in at this time.</li>
+</ul>
+<p>When the web app scales out, Azure starts new instances of the hardware defined by the App Service Plan to the app.<br>
+To prevent runaway autoscaling, an App Service Plan has an instance limit.</p>
+<h4 id="metrics-for-autoscale-rules">Metrics for autoscale rules</h4>
+<ul>
+<li><strong>CPU Percentage</strong></li>
+<li><strong>Memory Percentage</strong></li>
+<li><strong>Disk Queue Length</strong></li>
+<li><strong>Http Queue Length</strong></li>
+<li><strong>Data In</strong>. This metric is the number of bytes received across all instances.</li>
+<li><strong>Data Out</strong>. This metric is the number of bytes sent by all instances.</li>
+</ul>
+<h4 id="how-an-autoscale-rule-analyzes-metrics">How an autoscale rule analyzes metrics</h4>
+<p>Autoscaling works by analyzing trends in metric values over time across all instances.</p>
+<p>In the first step, an autoscale rule aggregates the values retrieved for a metric for all instances across a period of time known as the <em>time grain</em>.Each metric has its own intrinsic time grain, but in most cases this period is 1 minute. The aggregated value is known as the <em>time aggregation</em>. The options available are <em>Average</em>, <em>Minimum</em>, <em>Maximum</em>, <em>Total</em>, <em>Last</em>, and <em>Count</em>.</p>
+<p>autoscale rule performs a second step that performs a further aggregation of the value calculated by the <em>time aggregation</em> over a longer, user-specified period, known as the <em>Duration</em>. The minimum <em>Duration</em> is 5 minutes.</p>
+<p>The aggregation calculation for the <em>Duration</em> can be different from that of the <em>time grain</em>.</p>
+<h4 id="autoscale-actions">Autoscale actions</h4>
+<p>When an autoscale rule detects that a metric has crossed a threshold, it can perform an autoscale action. An autoscale action can be <em>scale-out</em> or <em>scale-in</em>.</p>
+<p>An autoscale action has a <em>cool down</em> period, specified in minutes. During this interval, the scale rule won’t be triggered again. Remember that it takes time to start up or shut down instances, and so any metrics gathered might not show any significant changes for several minutes. The minimum cool down period is five minutes.</p>
+<h4 id="pairing-autoscale-rules">Pairing autoscale rules</h4>
+<p>You should plan for scaling-in when a workload decreases. Consider defining autoscale rules in pairs in the same autoscale condition.</p>
+<h4 id="combining-autoscale-rules">Combining autoscale rules</h4>
+<p>A single autoscale condition can contain several autoscale rules (for example, a scale-out rule and the corresponding scale-in rule). However, the autoscale rules in an autoscale condition don’t have to be directly related. When determining whether to scale out, the autoscale action will be performed if <strong>any</strong> of the scale-out rules are met. When scaling in, the autoscale action will run <strong>only if all</strong> of the scale-in rules are met.</p>
+<h3 id="enable-autoscale-in-app-service">Enable autoscale in App Service</h3>
+<h4 id="enable-autoscaling">Enable autoscaling</h4>
+<p>To get started with autoscaling navigate to your App Service plan in the Azure portal and select <strong>Scale out (App Service plan)</strong> in the <strong>Settings</strong> group in the left navigation pane. Selecting <strong>Custom autoscale</strong> reveals condition groups you can use to manage your scale settings.</p>
+<p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/scale-apps-app-service/media/enable-autoscale.png" alt="Enabling autoscale"></p>
+<h4 id="add-scale-conditions">Add scale conditions</h4>
+<p>Once you enable autoscaling, you can edit the automatically created default scale condition, and you can add your own custom scale conditions.<br>
+<img src="https://docs.microsoft.com/en-us/learn/wwl-azure/scale-apps-app-service/media/autoscale-conditions.png" alt="The condition page for an App Service Plan showing the default scale condition."><br>
+<a href="https://docs.microsoft.com/en-us/learn/modules/scale-apps-app-service/4-autoscale-app-service">https://docs.microsoft.com/en-us/learn/modules/scale-apps-app-service/4-autoscale-app-service</a></p>
 
     </div>
   </div>
