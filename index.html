@@ -17,6 +17,7 @@
 <ul>
 <li><a href="#explore-azure-app-service">Explore Azure App Service</a></li>
 <li><a href="#scale-apps-in-azure-app-service">Scale apps in Azure App Service</a></li>
+<li><a href="#explore-azure-app-service-deployment-slots">Explore Azure App Service deployment slots</a></li>
 </ul>
 </li>
 </ul>
@@ -424,8 +425,159 @@ To prevent runaway autoscaling, an App Service Plan has an instance limit.</p>
 <p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/scale-apps-app-service/media/enable-autoscale.png" alt="Enabling autoscale"></p>
 <h4 id="add-scale-conditions">Add scale conditions</h4>
 <p>Once you enable autoscaling, you can edit the automatically created default scale condition, and you can add your own custom scale conditions.<br>
-<img src="https://docs.microsoft.com/en-us/learn/wwl-azure/scale-apps-app-service/media/autoscale-conditions.png" alt="The condition page for an App Service Plan showing the default scale condition."><br>
-<a href="https://docs.microsoft.com/en-us/learn/modules/scale-apps-app-service/4-autoscale-app-service">https://docs.microsoft.com/en-us/learn/modules/scale-apps-app-service/4-autoscale-app-service</a></p>
+<img src="https://docs.microsoft.com/en-us/learn/wwl-azure/scale-apps-app-service/media/autoscale-conditions.png" alt="The condition page for an App Service Plan showing the default scale condition."></p>
+<h4 id="create-scale-rules">Create scale rules</h4>
+<p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/scale-apps-app-service/media/autoscale-rules.png" alt="Create scale rules"></p>
+<h4 id="monitor-autoscaling-activity">Monitor autoscaling activity</h4>
+<p>The Azure portal enables you to track when autoscaling has occurred through the <strong>Run history</strong> chart.<br>
+<img src="https://docs.microsoft.com/en-us/learn/wwl-azure/scale-apps-app-service/media/autoscale-run-history.png" alt=""></p>
+<p>You can use the <strong>Run history</strong> chart in conjunction with the metrics shown on the <strong>Overview</strong> page to correlate the autoscaling events with resource utilization.</p>
+<p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/scale-apps-app-service/media/service-plan-metrics.png" alt="The metrics shown on the App Service Plan overview page."></p>
+<h3 id="explore-autoscale-best-practices">Explore autoscale best practices</h3>
+<ul>
+<li><strong>Ensure the maximum and minimum values are different and have an adequate margin between them</strong></li>
+<li><strong>Choose the appropriate statistic for your diagnostics metric</strong></li>
+<li><strong>Choose the thresholds carefully for all metric types</strong>: Don’t define rules like this, because they will lead to a constant scaling out and scaling back in: Increase instances by one count when Thread Count &gt;= 600, Decrease instances by one count when Thread Count &lt;= 600</li>
+<li><strong>Considerations for scaling when multiple rules are configured in a profile</strong>: On  <em>scale out</em>, autoscale runs if any rule is met. On  <em>scale-in</em>, autoscale require all rules to be met.</li>
+<li><strong>Always select a safe default instance count</strong></li>
+<li><strong>Configure autoscale notifications</strong>: Autoscale will post to the Activity Log if any of the following conditions occur:
+<ul>
+<li>Autoscale issues a scale operation</li>
+<li>Autoscale service successfully completes a scale action</li>
+<li>Autoscale service fails to take a scale action.</li>
+<li>Metrics aren’t available for autoscale service to make a scale decision.</li>
+<li>Metrics are available (recovery) again to make a scale decision.<br>
+In addition to using activity log alerts, you can also configure email or webhook notifications to get notified.</li>
+</ul>
+</li>
+</ul>
+<h2 id="explore-azure-app-service-deployment-slots">Explore Azure App Service deployment slots</h2>
+<h3 id="explore-staging-environments">Explore staging environments</h3>
+<p>You can use a separate deployment slot instead of the default production slot when you’re running in the <strong>Standard</strong>, <strong>Premium</strong>, or <strong>Isolated</strong> App Service plan tier. Deployment slots are live apps with their own host names.</p>
+<p>Deploying your application to a non-production slot has the following benefits:</p>
+<ul>
+<li>You can validate app changes in a staging deployment slot before swapping it with the production slot.</li>
+<li>Deploying an app to a slot first and swapping it into production makes sure that all instances of the slot are warmed up before being swapped into production.</li>
+<li>After a swap, the slot with previously staged app now has the previous production app. If the changes swapped into the production slot aren’t as you expect, you can perform the same swap immediately to get your “last known good site” back.</li>
+</ul>
+<p>Each App Service plan tier supports a different number of deployment slots. There’s no additional charge for using deployment slots.</p>
+<h3 id="examine-slot-swapping">Examine slot swapping</h3>
+<p>When you swap slots (for example, from a staging slot to the production slot), App Service does the following to ensure that the target slot doesn’t experience downtime:</p>
+<ol>
+<li>
+<p>Apply the following settings from the target slot (for example, the production slot) to all instances of the source slot:</p>
+<ul>
+<li>Slot-specific app settings and connection strings, if applicable.</li>
+<li>Continuous deployment settings, if enabled.</li>
+<li>App Service authentication settings, if enabled.</li>
+</ul>
+<p>Any of these cases trigger all instances in the source slot to restart. During  <strong>swap with preview</strong>, this marks the end of the first phase. The swap operation is paused, and you can validate that the source slot works correctly with the target slot’s settings.</p>
+</li>
+<li>
+<p>Wait for every instance in the source slot to complete its restart.</p>
+</li>
+<li>
+<p>If local cache is enabled, trigger local cache initialization by making an HTTP request to the application root ("/") on each instance of the source slot.</p>
+</li>
+<li>
+<p>If auto swap is enabled with custom warm-up, trigger Application Initiation by making an HTTP request to the application root ("/") on each instance of the source slot.</p>
+</li>
+<li>
+<p>If all instances on the source slot are warmed up successfully, swap the two slots by switching the routing rules for the two slots.</p>
+</li>
+<li>
+<p>Now that the source slot has the pre-swap app previously in the target slot, perform the same operation by applying all settings and restarting the instances.</p>
+</li>
+</ol>
+
+<table>
+<thead>
+<tr>
+<th>Settings that are swapped</th>
+<th>Settings that aren’t swapped</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>General settings, such as framework version, 32/64-bit, web sockets</td>
+<td>Publishing endpoints</td>
+</tr>
+<tr>
+<td>App settings (can be configured to stick to a slot)</td>
+<td>Custom domain names</td>
+</tr>
+<tr>
+<td>Connection strings (can be configured to stick to a slot)</td>
+<td>Non-public certificates and TLS/SSL settings</td>
+</tr>
+<tr>
+<td>Handler mappings</td>
+<td>Scale settings</td>
+</tr>
+<tr>
+<td>Public certificates</td>
+<td>WebJobs schedulers</td>
+</tr>
+<tr>
+<td>WebJobs content</td>
+<td>IP restrictions</td>
+</tr>
+<tr>
+<td>Hybrid connections</td>
+<td>Always On</td>
+</tr>
+<tr>
+<td>Virtual network integration</td>
+<td>Diagnostic log settings</td>
+</tr>
+<tr>
+<td>Service endpoints</td>
+<td>Cross-origin resource sharing (CORS)</td>
+</tr>
+<tr>
+<td>Azure Content Delivery Network</td>
+<td></td>
+</tr>
+</tbody>
+</table><p>Settings can be made swappable or be prevented from swapping via configuration.</p>
+<h3 id="swap-deployment-slots">Swap deployment slots</h3>
+<h4 id="manually-swapping-deployment-slots">Manually swapping deployment slots</h4>
+<ol>
+<li>Go to your app’s  <strong>Deployment slots</strong>  page and select  <strong>Swap</strong>.</li>
+<li>Select the desired <strong>Source</strong> and <strong>Target</strong> slots. Usually, the target is the production slot. Also, select the <strong>Source Changes</strong> and <strong>Target Changes</strong> tabs and verify that the configuration changes are expected.</li>
+</ol>
+<h5 id="swap-with-preview-multi-phase-swap">Swap with preview (multi-phase swap)</h5>
+<p>Before you swap into production as the target slot, validate that the app runs with the swapped settings.</p>
+<ol>
+<li>Follow the steps above in Swap deployment slots but select  <strong>Perform swap with preview</strong>. The dialog box shows you how the configuration in the source slot changes in phase 1, and how the source and target slot change in phase 2.</li>
+<li>When you’re ready to start the swap, select <strong>Start Swap</strong>. When phase 1 finishes, you’re notified in the dialog box. Preview the swap in the source slot by going to <code>https://&lt;app_name&gt;-&lt;source-slot-name&gt;.azurewebsites.net</code>.</li>
+<li>When you’re ready to complete the pending swap, select <strong>Complete Swap</strong> in <strong>Swap action</strong> and select <strong>Complete Swap</strong>.</li>
+</ol>
+<h4 id="configure-auto-swap">Configure auto swap</h4>
+<p>Auto swap streamlines Azure DevOps scenarios where you want to deploy your app continuously with zero cold starts and zero downtime for customers of the app.</p>
+<h4 id="specify-custom-warm-up">Specify custom warm-up</h4>
+<p>Some apps might require custom warm-up actions before the swap. The <code>applicationInitialization</code> configuration element in web.config lets you specify custom initialization actions.</p>
+<pre><code>&lt;system.webServer&gt;
+ &lt;applicationInitialization&gt;
+   &lt;add initializationPage="/" hostName="[app hostname]" /&gt;
+   &lt;add initializationPage="/Home/About" hostName="[app hostname]" /&gt;
+ &lt;/applicationInitialization&gt; 
+&lt;/system.webServer&gt;
+</code></pre>
+<h4 id="roll-back-and-monitor-a-swap">Roll back and monitor a swap</h4>
+<p>If any errors occur in the target slot (for example, the production slot) after a slot swap, restore the slots to their pre-swap states by swapping the same two slots immediately.</p>
+<h3 id="route-traffic-in-app-service">Route traffic in App Service</h3>
+<p>By default, all client requests to the app’s production URL (<code>http://&lt;app_name&gt;.azurewebsites.net</code>) are routed to the production slot. You can route a portion of the traffic to another slot. This feature is useful if you need user feedback for a new update, but you’re not ready to release it to production.</p>
+<h4 id="route-production-traffic-automatically">Route production traffic automatically</h4>
+<p>In the  <strong>Traffic %</strong>  column of the slot you want to route to, specify a percentage (between 0 and 100) to represent the amount of total traffic you want to route. Select  <strong>Save</strong>.</p>
+<p>After a client is automatically routed to a specific slot, it’s “pinned” to that slot for the life of that client session. On the client browser, you can see which slot your session is pinned to by looking at the <code>x-ms-routing-name</code> cookie in your HTTP headers. A request that’s routed to the “staging” slot has the cookie <code>x-ms-routing-name=staging</code>. A request that’s routed to the production slot has the cookie <code>x-ms-routing-name=self</code>.</p>
+<h4 id="route-production-traffic-manually">Route production traffic manually</h4>
+<p>In addition to automatic traffic routing, App Service can route requests to a specific slot. This is useful when you want your users to be able to opt in to or opt out of your beta app. To route production traffic manually, you use the <code>x-ms-routing-name</code> query parameter.</p>
+<p>To let users opt out of your beta app, for example, you can put this link on your webpage:</p>
+<pre><code>&lt;a href="&lt;webappname&gt;.azurewebsites.net/?x-ms-routing-name=self"&gt;Go back to production app&lt;/a&gt;
+</code></pre>
+<p>By default, new slots are given a routing rule of <code>0%</code>, a default value is displayed in grey. When you explicitly set this value to <code>0%</code> it is displayed in black, your users can access the staging slot manually by using the <code>x-ms-routing-name</code> query parameter.</p>
+<p><a href="https://docs.microsoft.com/en-us/learn/paths/implement-azure-functions/">AZ-204: Implement Azure Functions - Learn | Microsoft Docs</a></p>
 
     </div>
   </div>
