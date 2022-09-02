@@ -48,6 +48,7 @@
 <li><a href="#rehydrate-blob-data-from-the-archive-tier">Rehydrate blob data from the archive tier</a></li>
 </ul>
 </li>
+<li><a href="#work-with-azure-blob-storage">Work with Azure Blob storage</a></li>
 </ul>
 </li>
 </ul>
@@ -1603,7 +1604,85 @@ public static async Task Run(
 <td>Unsupported</td>
 </tr>
 </tbody>
-</table>
+</table><h4 id="change-a-blobs-access-tier-to-an-online-tier">Change a blob’s access tier to an online tier</h4>
+<p>The second option for rehydrating a blob from the archive tier to an online tier is to change the blob’s tier by calling <strong>Set Blob Tier</strong>. With this operation, you can change the tier of the archived blob to either hot or cool.</p>
+<p>Changing a blob’s tier doesn’t affect its last modified time. If there is a lifecycle management policy in effect for the storage account, then rehydrating a blob with <strong>Set Blob Tier</strong> can result in a scenario where the lifecycle policy moves the blob back to the archive tier after rehydration because the last modified time is beyond the threshold set for the policy.</p>
+<h2 id="work-with-azure-blob-storage">Work with Azure Blob storage</h2>
+<h3 id="explore-azure-blob-storage-client-library">Explore Azure Blob storage client library</h3>
+<p>The Azure Storage client libraries for .NET offer a convenient interface for making calls to Azure Storage. Below are the classes in the Azure.Storage.Blobs namespace and their purpose:</p>
+<ul>
+<li>The  <code>BlobClient</code>  allows you to manipulate Azure Storage blobs.</li>
+<li>Provides the client configuration options for connecting to Azure Blob Storage.</li>
+<li>The  <code>BlobContainerClient</code>  allows you to manipulate Azure Storage containers and their blobs.</li>
+<li>The  <code>BlobServiceClient</code>  allows you to manipulate Azure Storage service resources and blob containers.</li>
+<li>The  <code>BlobUriBuilder</code>  class provides a convenient way to modify the contents of a Uri instance to point to different Azure Storage resources like an account, container, or blob.</li>
+</ul>
+<h3 id="manage-container-properties-and-metadata-by-using-.net">Manage container properties and metadata by using .NET</h3>
+<ul>
+<li><strong>System properties</strong>: System properties exist on each Blob storage resource. Some of them can be read or set, while others are read-only. Under the covers, some system properties correspond to certain standard HTTP headers. The Azure Storage client library for .NET maintains these properties for you.</li>
+<li><strong>User-defined metadata</strong>: User-defined metadata consists of one or more name-value pairs that you specify for a Blob storage resource. You can use metadata to store additional values with the resource. Metadata values are for your own purposes only, and do not affect how the resource behaves.</li>
+</ul>
+<p>Metadata names must be valid HTTP header names and valid C# identifiers, may contain only ASCII characters, and should be treated as case-insensitive.</p>
+<h4 id="retrieve-container-properties">Retrieve container properties</h4>
+<p>To retrieve container properties, call one of the following methods of the  <code>BlobContainerClient</code>  class:</p>
+<ul>
+<li><code>GetProperties</code></li>
+<li><code>GetPropertiesAsync</code></li>
+</ul>
+<h4 id="set-and-retrieve-metadata">Set and retrieve metadata</h4>
+<p>You can specify metadata as one or more name-value pairs on a blob or container resource. To set metadata, add name-value pairs to an  <code>IDictionary</code>  object, and then call one of the following methods of the  <code>BlobContainerClient</code>  class to write the values:</p>
+<ul>
+<li><code>SetMetadata</code></li>
+<li><code>SetMetadataAsync</code></li>
+</ul>
+<p>The <code>GetProperties</code> and <code>GetPropertiesAsync</code> methods are used to retrieve metadata in addition to properties as shown earlier.</p>
+<h3 id="set-and-retrieve-properties-and-metadata-for-blob-resources-by-using-rest">Set and retrieve properties and metadata for blob resources by using REST</h3>
+<h4 id="metadata-header-format">Metadata header format</h4>
+<p>Metadata headers are name/value pairs. The format for the header is:</p>
+<pre><code>x-ms-meta-name:string-value  
+</code></pre>
+<p>Names are case-insensitive. Note that metadata names preserve the case with which they were created, but are case-insensitive when set or read.</p>
+<h4 id="operations-on-metadata">Operations on metadata</h4>
+<p>Note that metadata values can only be read or written in full; partial updates are not supported.</p>
+<h5 id="retrieving-properties-and-metadata">Retrieving properties and metadata</h5>
+<p>The GET and HEAD operations both retrieve metadata headers for the specified container or blob. These operations return headers only; they do not return a response body.<br>
+The URI syntax for retrieving metadata headers on a container is as follows:</p>
+<pre><code>GET/HEAD https://myaccount.blob.core.windows.net/mycontainer?restype=container  
+</code></pre>
+<p>The URI syntax for retrieving metadata headers on a blob is as follows:</p>
+<pre><code>GET/HEAD https://myaccount.blob.core.windows.net/mycontainer/myblob?comp=metadata
+</code></pre>
+<h5 id="setting-metadata-headers">Setting Metadata Headers</h5>
+<p>The PUT operation sets metadata headers on the specified container or blob, overwriting any existing metadata on the resource.</p>
+<p>The URI syntax for setting metadata headers on a container is as follows:</p>
+<pre><code>PUT https://myaccount.blob.core.windows.net/mycontainer?comp=metadata&amp;restype=container
+
+</code></pre>
+<p>The URI syntax for setting metadata headers on a blob is as follows:</p>
+<pre><code>PUT https://myaccount.blob.core.windows.net/mycontainer/myblob?comp=metadata
+</code></pre>
+<h4 id="standard-http-properties-for-containers-and-blobs">Standard HTTP properties for containers and blobs</h4>
+<p>Properties and metadata are both represented as standard HTTP headers; the difference between them is in the naming of the headers. Metadata headers are named with the header prefix <code>x-ms-meta-</code> and a custom name. Property headers use standard HTTP header names, as specified in the Header Field Definitions section 14 of the HTTP/1.1 protocol specification.</p>
+<p>The standard HTTP headers supported on containers include:</p>
+<ul>
+<li><code>ETag</code></li>
+<li><code>Last-Modified</code></li>
+</ul>
+<p>The standard HTTP headers supported on blobs include:</p>
+<ul>
+<li><code>ETag</code></li>
+<li><code>Last-Modified</code></li>
+<li><code>Content-Length</code></li>
+<li><code>Content-Type</code></li>
+<li><code>Content-MD5</code></li>
+<li><code>Content-Encoding</code></li>
+<li><code>Content-Language</code></li>
+<li><code>Cache-Control</code></li>
+<li><code>Origin</code></li>
+<li><code>Range</code></li>
+</ul>
+<p><a href="https://docs.microsoft.com/en-us/learn/paths/az-204-develop-solutions-that-use-azure-cosmos-db/">AZ-204: Develop solutions that use Azure Cosmos DB - Learn | Microsoft Docs</a></p>
+
     </div>
   </div>
 </body>
