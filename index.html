@@ -40,6 +40,14 @@
 <li><a href="#az-204-develop-solutions-that-use-blob-storage">AZ-204: Develop solutions that use Blob storage</a>
 <ul>
 <li><a href="#explore-azure-blob-storage">Explore Azure Blob storage</a></li>
+<li><a href="#manage-the-azure-blob-storage-lifecycle">Manage the Azure Blob storage lifecycle</a>
+<ul>
+<li></li>
+<li><a href="#discover-blob-storage-lifecycle-policies">Discover Blob storage lifecycle policies</a></li>
+<li><a href="#implement-blob-storage-lifecycle-policies">Implement Blob storage lifecycle policies</a></li>
+<li><a href="#rehydrate-blob-data-from-the-archive-tier">Rehydrate blob data from the archive tier</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1253,7 +1261,349 @@ public static async Task Run(
 <li>Storing data for backup and restore, disaster recovery, and archiving.</li>
 <li>Storing data for analysis by an on-premises or Azure-hosted service.</li>
 </ul>
+<p>Objects in Blob storage are accessible via the Azure Storage REST API, Azure PowerShell, Azure CLI, or an Azure Storage client library.</p>
+<p>An Azure Storage account is the top-level container for all of your Azure Blob storage.</p>
+<h4 id="types-of-storage-accounts">Types of storage accounts</h4>
 
+<table>
+<thead>
+<tr>
+<th>Storage account type</th>
+<th>Supported storage services</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard general-purpose v2</td>
+<td>Blob, Queue, and Table storage, Azure Files</td>
+<td>Recommended for most scenarios using Azure Storage.</td>
+</tr>
+<tr>
+<td>Premium block blobs</td>
+<td>Blob storage</td>
+<td>Premium storage account type for block blobs and append blobs. Recommended for scenarios with high transactions rates, or scenarios that use smaller objects or require consistently low storage latency.</td>
+</tr>
+<tr>
+<td>Premium page blobs</td>
+<td>Page blobs only</td>
+<td>Premium storage account type for page blobs only.</td>
+</tr>
+<tr>
+<td>Premium file shares</td>
+<td>Azure Files</td>
+<td>Premium storage account type for file shares only. If you want support for NFS file shares in Azure Files, use the premium file shares account type.</td>
+</tr>
+</tbody>
+</table><h4 id="access-tiers-for-block-blob-data">Access tiers for block blob data</h4>
+<p>Each access tier in Azure Storage is optimized for a particular pattern of data usage.</p>
+<ul>
+<li>The  <strong>Hot</strong>  access tier, which is optimized for frequent access of objects in the storage account. The Hot tier has the highest storage costs, but the lowest access costs. New storage accounts are created in the hot tier by default.</li>
+<li>The  <strong>Cool</strong>  access tier, which is optimized for storing large amounts of data that is infrequently accessed and stored for at least 30 days. The Cool tier has lower storage costs and higher access costs compared to the Hot tier.</li>
+<li>The  <strong>Archive</strong>  tier, which is available only for individual block blobs. The archive tier is optimized for data that can tolerate several hours of retrieval latency and will remain in the Archive tier for at least 180 days. The archive tier is the most cost-effective option for storing data, but accessing that data is more expensive than accessing data in the hot or cool tiers.</li>
+</ul>
+<h3 id="discover-azure-blob-storage-resource-types">Discover Azure Blob storage resource types</h3>
+<p>Blob storage offers three types of resources:</p>
+<ul>
+<li>The  <strong>storage account</strong>.</li>
+<li>A  <strong>container</strong>  in the storage account</li>
+<li>A  <strong>blob</strong>  in a container</li>
+</ul>
+<h4 id="storage-accounts">Storage accounts</h4>
+<p>A storage account provides a unique namespace in Azure for your data. eg. for default enpoint: <a href="http://mystorageaccount.blob.core.windows.net">http://mystorageaccount.blob.core.windows.net</a></p>
+<h4 id="containers">Containers</h4>
+<p>A container organizes a set of blobs, similar to a directory in a file system. A storage account can include an unlimited number of containers, and a container can store an unlimited number of blobs.</p>
+<h4 id="blobs">Blobs</h4>
+<ul>
+<li><strong>Block blobs</strong>  store text and binary data, up to about 190.7 TB.</li>
+<li><strong>Append blobs</strong>  are made up of blocks like block blobs, but are optimized for append operations. Append blobs are ideal for scenarios such as logging data from virtual machines.</li>
+<li><strong>Page blobs</strong>  store random access files up to 8 TB in size. Page blobs store virtual hard drive (VHD) files and serve as disks for Azure virtual machines.</li>
+</ul>
+<h3 id="explore-azure-storage-security-features">Explore Azure Storage security features</h3>
+<ul>
+<li>All data (including metadata) written to Azure Storage is automatically encrypted using Storage Service Encryption (SSE).</li>
+<li>Azure Active Directory (Azure AD) and Role-Based Access Control (RBAC) are supported for Azure Storage for both resource management operations and data operation</li>
+<li>Data can be secured in transit between an application and Azure by using Client-Side Encryption, HTTPS, or SMB 3.0.</li>
+<li>OS and data disks used by Azure virtual machines can be encrypted using Azure Disk Encryption.</li>
+<li>Delegated access to the data objects in Azure Storage can be granted using a shared access signature.</li>
+</ul>
+<h4 id="azure-storage-encryption-for-data-at-rest">Azure Storage encryption for data at rest</h4>
+<p>Azure Storage automatically encrypts your data when persisting it to the cloud.Data in Azure Storage is encrypted and decrypted transparently using 256-bit AES encryption, one of the strongest block ciphers available, and is FIPS 140-2 compliant.</p>
+<h5 id="encryption-key-management">Encryption key management</h5>
+<p>You can rely on Microsoft-managed keys for the encryption of your storage account, or you can manage encryption with your own keys. If you choose to manage encryption with your own keys, you have two options:</p>
+<ul>
+<li>You can specify a  <em>customer-managed</em>  key to use for encrypting and decrypting all data in the storage account.</li>
+<li>You can specify a  <em>customer-provided</em>  key on Blob storage operations.</li>
+</ul>
+<p>| | Microsoft-managed keys | Customer-managed keys | Customer-provided keys |<br>
+| Encryption/decryption operations | Azure | Azure | Azure |<br>
+| Azure Storage services supported | All | Blob storage, Azure Files | Blob storage |<br>
+| Key storage | Microsoft key store | Azure Key Vault | Azure Key Vault or any other key store |<br>
+| Key rotation responsibility | Microsoft | Customer | Customer |<br>
+| Key usage | Microsoft | Azure portal, Storage Resource Provider REST API, Azure Storage management libraries, PowerShell, CLI | Azure Storage REST API (Blob storage), Azure Storage client libraries |<br>
+| Key access | Microsoft only | Microsoft, Customer | Customer only |</p>
+<h3 id="evaluate-azure-storage-redundancy-options">Evaluate Azure Storage redundancy options</h3>
+<p>Azure Storage always stores multiple copies of your data so that it is protected from planned and unplanned events.</p>
+<p>When deciding which redundancy option is best for your scenario, consider the tradeoffs between lower costs and higher availability.</p>
+<h4 id="redundancy-in-the-primary-region">Redundancy in the primary region</h4>
+<p>Data in an Azure Storage account is always replicated three times in the primary region.</p>
+<ul>
+<li><strong>Locally redundant storage (LRS)</strong>: Copies your data synchronously three times within a single physical location in the primary region.</li>
+<li><strong>Zone-redundant storage (ZRS)</strong>: Copies your data synchronously across three Azure availability zones in the primary region.</li>
+</ul>
+<h4 id="redundancy-in-a-secondary-region">Redundancy in a secondary region</h4>
+<p>For applications requiring high durability, you can choose to additionally copy the data in your storage account to a secondary region that is hundreds of miles away from the primary region.</p>
+<p>When you create a storage account, you select the primary region for the account. The paired secondary region is determined based on the primary region, and can’t be changed.</p>
+<ul>
+<li><strong>Geo-redundant storage (GRS)</strong>  copies your data synchronously three times within a single physical location in the primary region using LRS. It then copies your data asynchronously to a single physical location in the secondary region. Within the secondary region, your data is copied synchronously three times using LRS.</li>
+<li><strong>Geo-zone-redundant storage (GZRS)</strong>  copies your data synchronously across three Azure availability zones in the primary region using ZRS. It then copies your data asynchronously to a single physical location in the secondary region. Within the secondary region, your data is copied synchronously three times using LRS.</li>
+</ul>
+<h2 id="manage-the-azure-blob-storage-lifecycle">Manage the Azure Blob storage lifecycle</h2>
+<p>Data sets have unique lifecycles. Early in the lifecycle, people access some data often. But the need for access drops drastically as the data ages.</p>
+<h4 id="access-tiers">Access tiers</h4>
+<ul>
+<li><strong>Hot</strong>  - Optimized for storing data that is accessed frequently.</li>
+<li><strong>Cool</strong>  - Optimized for storing data that is infrequently accessed and stored for at least 30 days.</li>
+<li><strong>Archive</strong>  - Optimized for storing data that is rarely accessed and stored for at least 180 days with flexible latency requirements, on the order of hours.</li>
+</ul>
+<p>The hot and cool tiers support all redundancy options. The archive tier supports only LRS, GRS, and RA-GRS.</p>
+<h4 id="manage-the-data-lifecycle">Manage the data lifecycle</h4>
+<p>Azure Blob storage lifecycle management offers a rich, rule-based policy for General Purpose v2 and Blob storage accounts. Use the policy to transition your data to the appropriate access tiers or expire at the end of the data’s lifecycle.</p>
+<h3 id="discover-blob-storage-lifecycle-policies">Discover Blob storage lifecycle policies</h3>
+<p>A lifecycle management policy is a collection of rules in a JSON document. Each rule definition within a policy includes a filter set and an action set. The filter set limits rule actions to a certain set of objects within a container or objects names. The action set applies the tier or delete actions to the filtered set of objects.:</p>
+<pre><code>{
+  "rules": [
+    {
+      "name": "rule1",
+      "enabled": true,
+      "type": "Lifecycle",
+      "definition": {...}
+    },
+    {
+      "name": "rule2",
+      "type": "Lifecycle",
+      "definition": {...}
+    }
+  ]
+}
+</code></pre>
+<p>A policy is a collection of rules:</p>
+
+<table>
+<thead>
+<tr>
+<th>Parameter name</th>
+<th>Parameter type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rules</code></td>
+<td>An array of rule objects</td>
+<td>At least one rule is required in a policy. You can define up to 100 rules in a policy.</td>
+</tr>
+</tbody>
+</table><p>Each rule within the policy has several parameters:</p>
+
+<table>
+<thead>
+<tr>
+<th>Parameter name</th>
+<th>Parameter type</th>
+<th>Notes</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>String</td>
+<td>It must be unique within a policy.</td>
+<td>True</td>
+</tr>
+<tr>
+<td><code>enabled</code></td>
+<td>Boolean</td>
+<td>An optional boolean to allow a rule to be temporary disabled.</td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>An enum value</td>
+<td>The current valid type is Lifecycle.</td>
+<td>True</td>
+</tr>
+<tr>
+<td><code>definition</code></td>
+<td>An object that defines the lifecycle rule</td>
+<td>Each definition is made up of a filter set and an action set.</td>
+<td>True</td>
+</tr>
+</tbody>
+</table><h4 id="rules">Rules</h4>
+<p>Each rule definition includes a filter set and an action set. The filter set limits rule actions to a certain set of objects within a container or objects names.</p>
+<pre><code>{
+  "rules": [
+    {
+      "name": "ruleFoo",
+      "enabled": true,
+      "type": "Lifecycle",
+      "definition": {
+        "filters": {
+          "blobTypes": [ "blockBlob" ],
+          "prefixMatch": [ "container1/foo" ]
+        },
+        "actions": {
+          "baseBlob": {
+            "tierToCool": { "daysAfterModificationGreaterThan": 30 },
+            "tierToArchive": { "daysAfterModificationGreaterThan": 90 },
+            "delete": { "daysAfterModificationGreaterThan": 2555 }
+          },
+          "snapshot": {
+            "delete": { "daysAfterCreationGreaterThan": 90 }
+          }
+        }
+      }
+    }
+  ]
+}
+</code></pre>
+<h4 id="rule-filters">Rule filters</h4>
+
+<table>
+<thead>
+<tr>
+<th>Filter name</th>
+<th>Filter type</th>
+<th>Is Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>blobTypes</td>
+<td>An array of predefined enum values.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>prefixMatch</td>
+<td>An array of strings for prefixes to be match. Each rule can define up to 10 prefixes. A prefix string must start with a container name.</td>
+<td>No</td>
+</tr>
+<tr>
+<td>blobIndexMatch</td>
+<td>An array of dictionary values consisting of blob index tag key and value conditions to be matched. Each rule can define up to 10 blob index tag condition.</td>
+<td>No</td>
+</tr>
+</tbody>
+</table><h4 id="rule-actions">Rule actions</h4>
+
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Base Blob</th>
+<th>Snapshot</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tierToCool</td>
+<td>Supported for blockBlob</td>
+<td>Supported</td>
+<td>Supported</td>
+</tr>
+<tr>
+<td>enableAutoTierToHotFromCool</td>
+<td>Supported for blockBlob</td>
+<td>Not supported</td>
+<td>Not supported</td>
+</tr>
+<tr>
+<td>tierToArchive</td>
+<td>Supported for blockBlob</td>
+<td>Supported</td>
+<td>Supported</td>
+</tr>
+<tr>
+<td>delete</td>
+<td>Supported for blockBlob and appendBlob</td>
+<td>Supported</td>
+<td>Supported</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Action run condition</th>
+<th>Condition value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>daysAfterModificationGreaterThan</td>
+<td>Integer value indicating the age in days</td>
+<td>The condition for base blob actions</td>
+</tr>
+<tr>
+<td>daysAfterCreationGreaterThan</td>
+<td>Integer value indicating the age in days</td>
+<td>The condition for blob snapshot actions</td>
+</tr>
+</tbody>
+</table><h3 id="implement-blob-storage-lifecycle-policies">Implement Blob storage lifecycle policies</h3>
+<h4 id="azure-portal">Azure portal</h4>
+<p>There are two ways to add a policy through the Azure portal: Azure portal List view, and Azure portal Code view.</p>
+<h4 id="azure-cli">Azure CLI</h4>
+<p>To add a lifecycle management policy with Azure CLI, write the policy to a JSON file, then call the <code>az storage account management-policy create</code> command to create the policy.</p>
+<h3 id="rehydrate-blob-data-from-the-archive-tier">Rehydrate blob data from the archive tier</h3>
+<p>While a blob is in the archive access tier, it’s considered to be offline and can’t be read or modified. In order to read or modify data in an archived blob, you must first rehydrate the blob to an online tier, either the hot or cool tier.</p>
+<ul>
+<li><strong>Copy an archived blob to an online tier</strong></li>
+<li><strong>Change a blob’s access tier to an online tier</strong></li>
+</ul>
+<h4 id="rehydration-priority">Rehydration priority</h4>
+<p>When you rehydrate a blob, you can set the priority for the rehydration operation via the optional  <code>x-ms-rehydrate-priority</code>  header on a  <a href="https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-tier">Set Blob Tier</a>  or  <strong>Copy Blob/Copy Blob From URL</strong>  operation. Rehydration priority options include:</p>
+<ul>
+<li><strong>Standard priority</strong>: The rehydration request will be processed in the order it was received and may take up to 15 hours.</li>
+<li><strong>High priority</strong>: The rehydration request will be prioritized over standard priority requests and may complete in under one hour for objects under 10 GB in size.</li>
+</ul>
+<h4 id="copy-an-archived-blob-to-an-online-tier">Copy an archived blob to an online tier</h4>
+<p>You can use either the <strong>Copy Blob</strong> or <strong>Copy Blob from URL</strong> operation to copy the blob. You must copy the archived blob to a new blob with a different name or to a different container. Copying an archived blob to an online destination tier is supported within the same storage account only.</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Hot tier source</th>
+<th>Cool tier source</th>
+<th>Archive tier source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hot tier destination</td>
+<td>Supported</td>
+<td>Supported</td>
+<td>Supported within the same account. Requires blob rehydration.</td>
+</tr>
+<tr>
+<td>Cool tier destination</td>
+<td>Supported</td>
+<td>Supported</td>
+<td>Supported within the same account. Requires blob rehydration.</td>
+</tr>
+<tr>
+<td>Archive tier destination</td>
+<td>Supported</td>
+<td>Supported</td>
+<td>Unsupported</td>
+</tr>
+</tbody>
+</table>
     </div>
   </div>
 </body>
