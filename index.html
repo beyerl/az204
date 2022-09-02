@@ -20,6 +20,28 @@
 <li><a href="#explore-azure-app-service-deployment-slots">Explore Azure App Service deployment slots</a></li>
 </ul>
 </li>
+<li><a href="#az-204-implement-azure-functions">AZ-204: Implement Azure Functions</a>
+<ul>
+<li><a href="#explore-azure-functions">Explore Azure Functions</a>
+<ul>
+<li></li>
+<li><a href="#compare-azure-functions-hosting-options">Compare Azure Functions hosting options</a></li>
+<li><a href="#scale-azure-functions">Scale Azure Functions</a></li>
+<li><a href="#develop-azure-functions">Develop Azure Functions</a></li>
+<li><a href="#create-triggers-and-bindings">Create triggers and bindings</a></li>
+<li><a href="#javascript-example">JavaScript example</a></li>
+<li><a href="#class-library-example">Class library example</a></li>
+<li><a href="#connect-functions-to-azure-services">Connect functions to Azure services</a></li>
+</ul>
+</li>
+<li><a href="#implement-durable-functions">Implement Durable Functions</a></li>
+</ul>
+</li>
+<li><a href="#az-204-develop-solutions-that-use-blob-storage">AZ-204: Develop solutions that use Blob storage</a>
+<ul>
+<li><a href="#explore-azure-blob-storage">Explore Azure Blob storage</a></li>
+</ul>
+</li>
 </ul>
 
     </div>
@@ -577,7 +599,660 @@ In addition to using activity log alerts, you can also configure email or webhoo
 <pre><code>&lt;a href="&lt;webappname&gt;.azurewebsites.net/?x-ms-routing-name=self"&gt;Go back to production app&lt;/a&gt;
 </code></pre>
 <p>By default, new slots are given a routing rule of <code>0%</code>, a default value is displayed in grey. When you explicitly set this value to <code>0%</code> it is displayed in black, your users can access the staging slot manually by using the <code>x-ms-routing-name</code> query parameter.</p>
-<p><a href="https://docs.microsoft.com/en-us/learn/paths/implement-azure-functions/">AZ-204: Implement Azure Functions - Learn | Microsoft Docs</a></p>
+<h1 id="az-204-implement-azure-functions">AZ-204: Implement Azure Functions</h1>
+<h2 id="explore-azure-functions">Explore Azure Functions</h2>
+<h4 id="discover-azure-functions">Discover Azure Functions</h4>
+<p>Azure Functions are a great solution for processing data, integrating systems, working with the internet-of-things (IoT), and building simple APIs and microservices. Consider Functions for tasks like image or order processing, file maintenance, or for any tasks that you want to run on a schedule. Functions provides templates to get you started with key scenarios.</p>
+<p>Azure Functions supports <em>triggers</em>, which are ways to start execution of your code, and <em>bindings</em>, which are ways to simplify coding for input and output data.</p>
+<h4 id="compare-azure-functions-and-azure-logic-apps">Compare Azure Functions and Azure Logic Apps</h4>
+<p>Both Functions and Logic Apps enable serverless workloads. Azure Functions is a serverless compute service, whereas Azure Logic Apps provides serverless workflows. Both can create complex orchestrations. An orchestration is a collection of functions or steps, called actions in Logic Apps, that are executed to accomplish a complex task.</p>
+<p>For Azure Functions, you develop orchestrations by writing code and using the Durable Functions extension.<br>
+For Logic Apps, you create orchestrations by using a GUI or editing configuration files.</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Azure Functions</th>
+<th>Logic Apps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Development</td>
+<td>Code-first (imperative)</td>
+<td>Designer-first (declarative)</td>
+</tr>
+<tr>
+<td>Connectivity</td>
+<td>About a dozen built-in binding types, write code for custom bindings</td>
+<td>Large collection of connectors,</td>
+</tr>
+<tr>
+<td>Actions</td>
+<td>Each activity is an Azure function; write code for activity functions</td>
+<td>Large collection of ready-made actions</td>
+</tr>
+<tr>
+<td>Monitoring</td>
+<td>Azure Application Insights</td>
+<td>Azure portal, Azure Monitor logs</td>
+</tr>
+<tr>
+<td>Management</td>
+<td>REST API, Visual Studio</td>
+<td>Azure portal, REST API, PowerShell, Visual Studio</td>
+</tr>
+</tbody>
+</table><h4 id="compare-functions-and-webjobs">Compare Functions and WebJobs</h4>
+<p>Like Azure Functions, Azure App Service WebJobs with the WebJobs SDK is a code-first integration service that is designed for developers.</p>
+<p>Azure Functions is built on the WebJobs SDK, so it shares many of the same event triggers and connections to other Azure services.</p>
+<p>| | Functions | WebJobs with WebJobs SDK |<br>
+| Serverless app model with automatic scaling | Yes | No |<br>
+| Develop and test in browser | Yes | No<br>
+| Pay-per-use pricing | Yes | No<br>
+| Integration with Logic Apps | Yes | No<br>
+| Trigger events | Timer<br>
+Azure Storage queues and blobs<br>
+Azure Service Bus queues and topics<br>
+Azure Cosmos DB<br>
+Azure Event Hubs<br>
+HTTP/WebHook (GitHub  Slack)<br>
+Azure Event Grid | Timer<br>
+Azure Storage queues and blobs<br>
+Azure Service Bus queues and topics<br>
+Azure Cosmos DB<br>
+Azure Event Hubs<br>
+File system |</p>
+<p>For most scenarios, Azure Functions is the best choice.</p>
+<h3 id="compare-azure-functions-hosting-options">Compare Azure Functions hosting options</h3>
+<p>There are three basic hosting plans available for Azure Functions: Consumption plan, Functions Premium plan, and App service (Dedicated) plan.</p>
+<p>The hosting plan you choose dictates the following behaviors:</p>
+<ul>
+<li>How your function app is scaled.</li>
+<li>The resources available to each function app instance.</li>
+<li>Support for advanced functionality, such as Azure Virtual Network connectivity.</li>
+</ul>
+
+<table>
+<thead>
+<tr>
+<th>Plan</th>
+<th>Benefits</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Consumption plan</strong></td>
+<td>This is the default hosting plan. It scales automatically and you only pay for compute resources when your functions are running. Instances of the Functions host are dynamically added and removed based on the number of incoming events.</td>
+</tr>
+<tr>
+<td><strong>Premium plan</strong></td>
+<td>Automatically scales based on demand using pre-warmed workers, which run applications with no delay after being idle, runs on more powerful instances, and connects to virtual networks.</td>
+</tr>
+<tr>
+<td><strong>Dedicated plan</strong></td>
+<td>Run your functions within an App Service plan at regular App Service plan rates. Best for long-running scenarios where Durable Functions can’t be used.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Hosting option</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ASE</strong></td>
+<td>App Service Environment (ASE) is an App Service feature that provides a fully isolated and dedicated environment for securely running App Service apps at high scale.</td>
+</tr>
+<tr>
+<td><strong>Kubernetes</strong></td>
+<td>Kubernetes provides a fully isolated and dedicated environment running on top of the Kubernetes platform.</td>
+</tr>
+</tbody>
+</table><h4 id="always-on">Always on</h4>
+<p>If you run on a Dedicated plan, you should enable the  <strong>Always on</strong>  setting so that your function app runs correctly. On an App Service plan, the functions runtime goes idle after a few minutes of inactivity, so only HTTP triggers will “wake up” your functions. Always on is available only on an App Service plan. On a Consumption plan, the platform activates function apps automatically.</p>
+<h4 id="storage-account-requirements">Storage account requirements</h4>
+<p>On any plan, a function app requires a general Azure Storage account, which supports Azure Blob, Queue, Files, and Table storage. This is because Functions rely on Azure Storage for operations such as managing triggers and logging function executions, but some storage accounts don’t support queues and tables.</p>
+<h3 id="scale-azure-functions">Scale Azure Functions</h3>
+<p>In the Consumption and Premium plans, Azure Functions scales CPU and memory resources by adding additional instances of the Functions host. The number of instances is determined on the number of events that trigger a function.</p>
+<p>Each instance of the Functions host in the Consumption plan is limited to 1.5 GB of memory and one CPU.<br>
+In the Premium plan, the plan size determines the available memory and CPU for all apps in that plan on that instance.</p>
+<h4 id="runtime-scaling">Runtime scaling</h4>
+<p>Azure Functions uses a component called the <em>scale controller</em> to monitor the rate of events and determine whether to scale out or scale in. The scale controller uses heuristics for each trigger type.</p>
+<p>The unit of scale for Azure Functions is the function app. When the function app is scaled out, additional resources are allocated to run multiple instances of the Azure Functions host.</p>
+<p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/explore-azure-functions/media/central-listener.png" alt="Scale controller monitoring events and creating instances"></p>
+<h4 id="scaling-behaviors">Scaling behaviors</h4>
+<ul>
+<li>
+<p><strong>Maximum instances:</strong>  A single function app only scales out to a maximum of 200 instances. A single instance may process more than one message or request at a time though, so there isn’t a set limit on number of concurrent executions.</p>
+</li>
+<li>
+<p><strong>New instance rate:</strong>  For HTTP triggers, new instances are allocated, at most, once per second. For non-HTTP triggers, new instances are allocated, at most, once every 30 seconds.</p>
+</li>
+</ul>
+<h4 id="limit-scale-out">Limit scale out</h4>
+<p>You may wish to restrict the maximum number of instances an app used to scale out. This is most common for cases where a downstream component like a database has limited throughput. By default, Consumption plan functions scale out to as many as 200 instances, and Premium plan functions will scale out to as many as 100 instances.</p>
+<h4 id="azure-functions-scaling-in-an-app-service-plan">Azure Functions scaling in an App service plan</h4>
+<p>Using an App Service plan, you can manually scale out by adding more VM instances.</p>
+<h3 id="develop-azure-functions">Develop Azure Functions</h3>
+<p>A function contains two important pieces - your code, which can be written in a variety of languages, and some config, the <em>function.json</em> file. For compiled languages, this config file is generated automatically from annotations in your code. For scripting languages, you must provide the config file yourself.</p>
+<p>The  <em>function.json</em>  file defines the function’s trigger, bindings, and other configuration settings. Every function has one and only one trigger. The runtime uses this config file to determine the events to monitor and how to pass data into and return data from a function execution. The following is an example  <em>function.json</em>  file.</p>
+<p>JSON</p>
+<pre><code>{
+    "disabled":false,
+    "bindings":[
+        // ... bindings here
+        {
+            "type": "bindingType",
+            "direction": "in",
+            "name": "myParamName",
+            // ... more depending on binding
+        }
+    ]
+}
+</code></pre>
+<p>The  <code>bindings</code>  property is where you configure both triggers and bindings. Each binding shares a few common settings and some settings which are specific to a particular type of binding. Every binding requires the following settings:</p>
+
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Types</th>
+<th>Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type</code></td>
+<td>string</td>
+<td>Name of binding. For example,  <code>queueTrigger</code>.</td>
+</tr>
+<tr>
+<td><code>direction</code></td>
+<td>string</td>
+<td>Indicates whether the binding is for receiving data into the function or sending data from the function. For example,  <code>in</code>  or  <code>out</code>.</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>The name that is used for the bound data in the function. For example,  <code>myQueue</code>.</td>
+</tr>
+</tbody>
+</table><h4 id="function-app">Function app</h4>
+<p>A function app provides an execution context in Azure in which your functions run. As such, it is the unit of deployment and management for your functions. A function app is comprised of one or more individual functions that are managed, deployed, and scaled together.</p>
+<h4 id="folder-structure">Folder structure</h4>
+<p>The code for all the functions in a specific function app is located in a root project folder that contains a host configuration file. The host.json file contains runtime-specific configurations and is in the root folder of the function app. A <em>bin</em> folder contains packages and other library files that the function app requires. Specific folder structures required by the function app depend on language.</p>
+<h4 id="local-development-environments">Local development environments</h4>
+<p>Your local functions can connect to live Azure services, and you can debug them on your local computer using the full Functions runtime.</p>
+<p>Do not mix local development with portal development in the same function app. When you create and publish functions from a local project, you should not try to maintain or modify project code in the portal.</p>
+<h3 id="create-triggers-and-bindings">Create triggers and bindings</h3>
+<p>Triggers are what cause a function to run. A trigger defines how a function is invoked and a function must have exactly one trigger. Triggers have associated data, which is often provided as the payload of the function.</p>
+<p>Binding to a function is a way of declaratively connecting another resource to the function; bindings may be connected as  <em>input bindings</em>,  <em>output bindings</em>, or both. Data from bindings is provided to the function as parameters. Bindings are optional and a function might have one or multiple input and/or output bindings.</p>
+<h4 id="trigger-and-binding-definitions">Trigger and binding definitions</h4>
+
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Triggers and bindings are configured by…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C# class library</td>
+<td>decorating methods and parameters with C# attributes</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>decorating methods and parameters with Java annotations</td>
+</tr>
+<tr>
+<td>JavaScript/PowerShell/Python/TypeScript</td>
+<td>updating  <em>function.json</em>  schema</td>
+</tr>
+</tbody>
+</table><h4 id="binding-direction">Binding direction</h4>
+<ul>
+<li>For triggers, the direction is always  <code>in</code></li>
+<li>Input and output bindings use  <code>in</code>  and  <code>out</code></li>
+<li>Some bindings support a special direction  <code>inout</code>. If you use  <code>inout</code>, only the  <strong>Advanced editor</strong>  is available via the  <strong>Integrate</strong>  tab in the portal.</li>
+</ul>
+<h4 id="azure-functions-trigger-and-binding-example">Azure Functions trigger and binding example</h4>
+<p>Suppose you want to write a new row to Azure Table storage whenever a new message appears in Azure Queue storage. This scenario can be implemented using an Azure Queue storage trigger and an Azure Table storage output binding.</p>
+<p>Here’s a  <em>function.json</em>  file for this scenario.</p>
+<p>JSON</p>
+<pre><code>{
+  "bindings": [
+    {
+      "type": "queueTrigger",
+      "direction": "in",
+      "name": "order",
+      "queueName": "myqueue-items",
+      "connection": "MY_STORAGE_ACCT_APP_SETTING"
+    },
+    {
+      "type": "table",
+      "direction": "out",
+      "name": "$return",
+      "tableName": "outTable",
+      "connection": "MY_TABLE_STORAGE_ACCT_APP_SETTING"
+    }
+  ]
+}
+</code></pre>
+<h5 id="c-script-example">C# script example</h5>
+<pre><code>#r "Newtonsoft.Json"
+
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+
+// From an incoming queue message that is a JSON object, add fields and write to Table storage
+// The method return value creates a new row in Table Storage
+public static Person Run(JObject order, ILogger log)
+{
+    return new Person() { 
+            PartitionKey = "Orders", 
+            RowKey = Guid.NewGuid().ToString(),  
+            Name = order["Name"].ToString(),
+            MobileNumber = order["MobileNumber"].ToString() };  
+}
+
+public class Person
+{
+    public string PartitionKey { get; set; }
+    public string RowKey { get; set; }
+    public string Name { get; set; }
+    public string MobileNumber { get; set; }
+}
+
+</code></pre>
+<h3 id="javascript-example">JavaScript example</h3>
+<pre><code>// From an incoming queue message that is a JSON object, add fields and write to Table Storage
+module.exports = async function (context, order) {
+    order.PartitionKey = "Orders";
+    order.RowKey = generateRandomId(); 
+
+    context.bindings.order = order;
+};
+
+function generateRandomId() {
+    return Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
+}
+
+</code></pre>
+<h3 id="class-library-example">Class library example</h3>
+<pre><code>public static class QueueTriggerTableOutput
+{
+    [FunctionName("QueueTriggerTableOutput")]
+    [return: Table("outTable", Connection = "MY_TABLE_STORAGE_ACCT_APP_SETTING")]
+    public static Person Run(
+        [QueueTrigger("myqueue-items", Connection = "MY_STORAGE_ACCT_APP_SETTING")]JObject order,
+        ILogger log)
+    {
+        return new Person() {
+                PartitionKey = "Orders",
+                RowKey = Guid.NewGuid().ToString(),
+                Name = order["Name"].ToString(),
+                MobileNumber = order["MobileNumber"].ToString() };
+    }
+}
+
+public class Person
+{
+    public string PartitionKey { get; set; }
+    public string RowKey { get; set; }
+    public string Name { get; set; }
+    public string MobileNumber { get; set; }
+</code></pre>
+<h3 id="connect-functions-to-azure-services">Connect functions to Azure services</h3>
+<p>Your function project does not directly accept the connection details. It references connection information by name from its configuration provider, allowing them to be changed across environments.</p>
+<p>The default configuration provider uses environment variables. These might be set by Application Settings when running in the Azure Functions service, or from the local settings filewhen developing locally.</p>
+<h4 id="connection-values">Connection values</h4>
+<p>When the connection name resolves to a single exact value, the runtime identifies the value as a <em>connection string</em>, which typically includes a secret.</p>
+<p>However, a connection name can also refer to a collection of multiple configuration items. Environment variables can be treated as a collection by using a shared prefix that ends in double underscores <code>__</code>. The group can then be referenced by setting the connection name to this prefix.</p>
+<p>For example, the <code>connection</code> property for a Azure Blob trigger definition might be <code>Storage1</code>. As long as there is no single string value configured with <code>Storage1</code> as its name, <code>Storage1__serviceUri</code> would be used for the <code>serviceUri</code> property of the connection.</p>
+<h4 id="configure-an-identity-based-connection">Configure an identity-based connection</h4>
+<p>Some connections in Azure Functions are configured to use an identity instead of a secret. Support depends on the extension using the connection. In some cases, a connection string may still be required in Functions even though the service to which you are connecting supports identity-based connections.</p>
+<p>When hosted in the Azure Functions service, identity-based connections use a managed identity.</p>
+<h4 id="grant-permission-to-the-identity">Grant permission to the identity</h4>
+<p>Whatever identity is being used must have permissions to perform the intended actions. This is typically done by assigning a role in Azure RBAC or specifying the identity in an access policy, depending on the service to which you are connecting.</p>
+<h2 id="implement-durable-functions">Implement Durable Functions</h2>
+<h3 id="explore-durable-functions-app-patterns">Explore Durable Functions app patterns</h3>
+<p><em>Durable Functions</em>  is an extension of Azure Functions that lets you write stateful functions in a serverless compute environment. It lets you define stateful workflows by writing <em>orchestrator functions</em> and stateful entities by writing <em>entity functions</em>.</p>
+<h4 id="supported-languages">Supported languages</h4>
+<ul>
+<li>C#</li>
+<li>JavaScript</li>
+<li>Python</li>
+<li>F#</li>
+<li>PowerShell</li>
+</ul>
+<h4 id="application-patterns">Application patterns</h4>
+<p>The primary use case for Durable Functions is simplifying complex, stateful coordination requirements in serverless applications.</p>
+<h5 id="function-chaining">Function chaining</h5>
+<p>In the function chaining pattern, a sequence of functions executes in a specific order. In this pattern, the output of one function is applied to the input of another function.</p>
+<p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/implement-durable-functions/media/function-chaining.png" alt="Four functions executing in a specific order"></p>
+<pre><code>[FunctionName("Chaining")]
+public static async Task&lt;object&gt; Run(
+    [OrchestrationTrigger] IDurableOrchestrationContext context)
+{
+    try
+    {
+        var x = await context.CallActivityAsync&lt;object&gt;("F1", null);
+        var y = await context.CallActivityAsync&lt;object&gt;("F2", x);
+        var z = await context.CallActivityAsync&lt;object&gt;("F3", y);
+        return  await context.CallActivityAsync&lt;object&gt;("F4", z);
+    }
+    catch (Exception)
+    {
+        // Error handling or compensation goes here.
+    }
+}
+</code></pre>
+<h5 id="fan-outfan-in">Fan out/fan in</h5>
+<p>In the fan out/fan in pattern, you execute multiple functions in parallel and then wait for all functions to finish. Often, some aggregation work is done on the results that are returned from the functions.</p>
+<p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/implement-durable-functions/media/fan-out-fan-in.png" alt="A single function that fans out to three functions that execute in parallel and, after operation of all three ends, sending the result to another function."><br>
+With normal functions, you can fan out by having the function send multiple messages to a queue. To fan in you write code to track when the queue-triggered functions end, and then store function outputs.</p>
+<pre><code>[FunctionName("FanOutFanIn")]
+public static async Task Run(
+    [OrchestrationTrigger] IDurableOrchestrationContext context)
+{
+    var parallelTasks = new List&lt;Task&lt;int&gt;&gt;();
+
+    // Get a list of N work items to process in parallel.
+    object[] workBatch = await context.CallActivityAsync&lt;object[]&gt;("F1", null);
+    for (int i = 0; i &lt; workBatch.Length; i++)
+    {
+        Task&lt;int&gt; task = context.CallActivityAsync&lt;int&gt;("F2", workBatch[i]);
+        parallelTasks.Add(task);
+    }
+
+    await Task.WhenAll(parallelTasks);
+
+    // Aggregate all N outputs and send the result to F3.
+    int sum = parallelTasks.Sum(t =&gt; t.Result);
+    await context.CallActivityAsync("F3", sum);
+}
+</code></pre>
+<h5 id="async-http-apis">Async HTTP APIs</h5>
+<p>The async HTTP API pattern addresses the problem of coordinating the state of long-running operations with external clients. A common way to implement this pattern is by having an HTTP endpoint trigger the long-running action. Then, redirect the client to a status endpoint that the client polls to learn when the operation is finished.<br>
+<img src="https://docs.microsoft.com/en-us/learn/wwl-azure/implement-durable-functions/media/async-http-api.png" alt="An HTTP endpoint triggers the long running action with the client polling for completion status."></p>
+<p>Durable Functions provides <strong>built-in support</strong> for this pattern, simplifying or even removing the code you need to write to interact with long-running function executions.</p>
+<p>The following example shows REST commands that start an orchestrator and query its status. For clarity, some protocol details are omitted from the example.</p>
+<pre><code>&gt; curl -X POST https://myfunc.azurewebsites.net/orchestrators/DoWork -H "Content-Length: 0" -i
+HTTP/1.1 202 Accepted
+Content-Type: application/json
+Location: https://myfunc.azurewebsites.net/runtime/webhooks/durabletask/b79baf67f717453ca9e86c5da21e03ec
+
+{"id":"b79baf67f717453ca9e86c5da21e03ec", ...}
+
+&gt; curl https://myfunc.azurewebsites.net/runtime/webhooks/durabletask/b79baf67f717453ca9e86c5da21e03ec -i
+HTTP/1.1 202 Accepted
+Content-Type: application/json
+Location: https://myfunc.azurewebsites.net/runtime/webhooks/durabletask/b79baf67f717453ca9e86c5da21e03ec
+
+{"runtimeStatus":"Running","lastUpdatedTime":"2019-03-16T21:20:47Z", ...}
+
+&gt; curl https://myfunc.azurewebsites.net/runtime/webhooks/durabletask/b79baf67f717453ca9e86c5da21e03ec -i
+HTTP/1.1 200 OK
+Content-Length: 175
+Content-Type: application/json
+
+{"runtimeStatus":"Completed","lastUpdatedTime":"2019-03-16T21:20:57Z", ...}
+</code></pre>
+<p>The Durable Functions extension exposes built-in HTTP APIs that manage long-running orchestrations. You can alternatively implement this pattern yourself by using your own function triggers (such as HTTP, a queue, or Azure Event Hubs) and the orchestration client binding.</p>
+<pre><code>public static class HttpStart
+{
+    [FunctionName("HttpStart")]
+    public static async Task&lt;HttpResponseMessage&gt; Run(
+        [HttpTrigger(AuthorizationLevel.Function, methods: "post", Route = "orchestrators/{functionName}")] HttpRequestMessage req,
+        [DurableClient] IDurableClient starter,
+        string functionName,
+        ILogger log)
+    {
+        // Function input comes from the request content.
+        object eventData = await req.Content.ReadAsAsync&lt;object&gt;();
+        string instanceId = await starter.StartNewAsync(functionName, eventData);
+
+        log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
+
+        return starter.CreateCheckStatusResponse(req, instanceId);
+    }
+}
+</code></pre>
+<h5 id="monitor">Monitor</h5>
+<p>The monitor pattern refers to a flexible, recurring process in a workflow. An example is polling until specific conditions are met.<br>
+<img src="https://docs.microsoft.com/en-us/learn/wwl-azure/implement-durable-functions/media/monitor.png" alt="A function running until a specific condition is met."></p>
+<pre><code>[FunctionName("MonitorJobStatus")]
+public static async Task Run(
+    [OrchestrationTrigger] IDurableOrchestrationContext context)
+{
+    int jobId = context.GetInput&lt;int&gt;();
+    int pollingInterval = GetPollingInterval();
+    DateTime expiryTime = GetExpiryTime();
+
+    while (context.CurrentUtcDateTime &lt; expiryTime)
+    {
+        var jobStatus = await context.CallActivityAsync&lt;string&gt;("GetJobStatus", jobId);
+        if (jobStatus == "Completed")
+        {
+            // Perform an action when a condition is met.
+            await context.CallActivityAsync("SendAlert", machineId);
+            break;
+        }
+
+        // Orchestration sleeps until this time.
+        var nextCheck = context.CurrentUtcDateTime.AddSeconds(pollingInterval);
+        await context.CreateTimer(nextCheck, CancellationToken.None);
+    }
+
+    // Perform more work here, or let the orchestration end.
+}
+</code></pre>
+<h5 id="human-interaction">Human interaction</h5>
+<p>Many automated processes involve some kind of human interaction. Involving humans in an automated process is tricky because people aren’t as highly available and as responsive as cloud services. An automated process might allow for this interaction by using timeouts and compensation logic.</p>
+<p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/implement-durable-functions/media/human-interaction-pattern.png" alt="A process awaiting human interaction before continuing."></p>
+<p>You can implement the pattern in this example by using an orchestrator function. The orchestrator uses a durable timer to request approval. The orchestrator escalates if timeout occurs. The orchestrator waits for an external event, such as a notification that’s generated by a human interaction.</p>
+<pre><code>[FunctionName("ApprovalWorkflow")]
+public static async Task Run(
+    [OrchestrationTrigger] IDurableOrchestrationContext context)
+{
+    await context.CallActivityAsync("RequestApproval", null);
+    using (var timeoutCts = new CancellationTokenSource())
+    {
+        DateTime dueTime = context.CurrentUtcDateTime.AddHours(72);
+        Task durableTimeout = context.CreateTimer(dueTime, timeoutCts.Token);
+
+        Task&lt;bool&gt; approvalEvent = context.WaitForExternalEvent&lt;bool&gt;("ApprovalEvent");
+        if (approvalEvent == await Task.WhenAny(approvalEvent, durableTimeout))
+        {
+            timeoutCts.Cancel();
+            await context.CallActivityAsync("ProcessApproval", approvalEvent.Result);
+        }
+        else
+        {
+            await context.CallActivityAsync("Escalate", null);
+        }
+    }
+}
+</code></pre>
+<h3 id="discover-the-four-function-types">Discover the four function types</h3>
+<h4 id="orchestrator-functions">Orchestrator functions</h4>
+<p>Orchestrator functions describe how actions are executed and the order in which actions are executed.</p>
+<p>Orchestrator functions are written using ordinary code, but there are strict requirements on how to write the code. Specifically, orchestrator function code must be deterministic.</p>
+<p>An orchestration can have many different types of actions, including activity functions, sub-orchestrations, waiting for external events, HTTP, and timers. Orchestrator functions can also interact with entity functions.</p>
+<h4 id="activity-functions">Activity functions</h4>
+<p>Activity functions are the basic unit of work in a durable function orchestration. For example, you might create an orchestrator function to process an order. The tasks involve checking the inventory, charging the customer, and creating a shipment. Each task would be a separate activity function.</p>
+<p>Unlike orchestrator functions, activity functions aren’t restricted in the type of work you can do in them. Activity functions are frequently used to make network calls or run CPU intensive operations.</p>
+<p>An activity trigger is used to define an activity function.</p>
+<h4 id="entity-functions">Entity functions</h4>
+<p>Entity functions define operations for reading and updating small pieces of state. We often refer to these stateful entities as durable entities. Like orchestrator functions, entity functions are functions with a special trigger type,  <em>entity trigger</em>. They can also be invoked from client functions or from orchestrator functions. Unlike orchestrator functions, entity functions do not have any specific code constraints. Entity functions also manage state explicitly rather than implicitly representing state via control flow. Some things to note:</p>
+<ul>
+<li>Entities are accessed via a unique identifier, the  <em>entity ID</em>. An entity ID is simply a pair of strings that uniquely identifies an entity instance.</li>
+<li>Operations on entities require that you specify the  <strong>Entity ID</strong>  of the target entity, and the  <strong>Operation name</strong>, which is a string that specifies the operation to perform.</li>
+</ul>
+<h4 id="client-functions">Client functions</h4>
+<p>What makes a function a client function is its use of the <em>durable client output binding</em>. Orchestrator and entity functions are triggered by their bindings and both of these triggers work by reacting to messages that are enqueued in a task hub. The primary way to deliver these messages is by using an orchestrator client binding, or an entity client binding, from within a <em>client function</em>.</p>
+<p>If you want to test an orchestrator or entity function in the Azure portal, you must instead run a client function that starts an orchestrator or entity function as part of its implementation.</p>
+<h3 id="explore-task-hubs">Explore task hubs</h3>
+<p>A task hub in Durable Functions is a logical container for durable storage resources that are used for orchestrations and entities. Orchestrator, activity, and entity functions can only directly interact with each other when they belong to the same task hub.</p>
+<p>If multiple function apps share a storage account, each function app must be configured with a separate task hub name.</p>
+<h4 id="azure-storage-resources">Azure Storage resources</h4>
+<p>A task hub in Azure Storage consists of the following resources:</p>
+<ul>
+<li>One or more control queues.</li>
+<li>One work-item queue.</li>
+<li>One history table.</li>
+<li>One instances table.</li>
+<li>One storage container containing one or more lease blobs.</li>
+<li>A storage container containing large message payloads, if applicable.</li>
+</ul>
+<p>All of these resources are created automatically in the configured Azure Storage account when orchestrator, entity, or activity functions run or are scheduled to run.</p>
+<h4 id="task-hub-names">Task hub names</h4>
+<p>Task hubs in Azure Storage are identified by a name that conforms to these rules:</p>
+<ul>
+<li>Contains only alphanumeric characters</li>
+<li>Starts with a letter</li>
+<li>Has a minimum length of 3 characters, maximum length of 45 characters</li>
+</ul>
+<p>The task hub name is declared in the  <em>host.json</em>  file, as shown in the following example:</p>
+<pre><code>{
+  "version": "2.0",
+  "extensions": {
+    "durableTask": {
+      "hubName": "MyTaskHub"
+    }
+  }
+}
+</code></pre>
+<h3 id="explore-durable-orchestrations">Explore durable orchestrations</h3>
+<p>You can use an  <em>orchestrator function</em>  to orchestrate the execution of other Durable functions within a function app. Orchestrator functions have the following characteristics:</p>
+<ul>
+<li>Orchestrator functions define function workflows using procedural code. No declarative schemas or designers are needed.</li>
+<li>Orchestrator functions can call other durable functions synchronously and asynchronously. Output from called functions can be reliably saved to local variables.</li>
+<li>Orchestrator functions are durable and reliable. Execution progress is automatically checkpointed when the function “awaits” or “yields”. Local state is never lost when the process recycles or the VM reboots.</li>
+<li>Orchestrator functions can be long-running. The total lifespan of an  <em>orchestration instance</em>  can be seconds, days, months, or never-ending.</li>
+</ul>
+<h4 id="orchestration-identity">Orchestration identity</h4>
+<p>Each  <em>instance</em>  of an orchestration has an instance identifier (also known as an  <em>instance ID</em>). By default, each instance ID is an autogenerated GUID. An orchestration’s instance ID is a required parameter for most instance management operations. They are also important for diagnostics.</p>
+<h4 id="reliability">Reliability</h4>
+<p>Orchestrator functions reliably maintain their execution state by using the event sourcing design pattern. Instead of directly storing the current state of an orchestration, the Durable Task Framework uses an append-only store to record the full series of actions the function orchestration takes.</p>
+<p>Durable Functions uses event sourcing transparently. Behind the scenes, the  <code>await</code>  (C#) or  <code>yield</code>  (JavaScript) operator in an orchestrator function yields control of the orchestrator thread back to the Durable Task Framework dispatcher. The dispatcher then commits any new actions that the orchestrator function scheduled to storage. The transparent commit action appends to the execution history of the orchestration instance. The history is stored in a storage table. The commit action then adds messages to a queue to schedule the actual work. At this point, the orchestrator function can be unloaded from memory.</p>
+<p>When an orchestration function is given more work to do, the orchestrator wakes up and re-executes the entire function from the start to rebuild the local state. During the replay, if the code tries to call a function (or do any other async work), the Durable Task Framework consults the execution history of the current orchestration. If it finds that the activity function has already executed and yielded a result, it replays that function’s result and the orchestrator code continues to run.</p>
+
+<table>
+<thead>
+<tr>
+<th>Pattern/Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sub-orchestrations</td>
+<td>Orchestrator functions can call activity functions, but also other orchestrator functions.</td>
+</tr>
+<tr>
+<td>Durable timers</td>
+<td>Orchestrations can schedule durable timers to implement delays or to set up timeout handling on async actions.</td>
+</tr>
+<tr>
+<td>External events</td>
+<td>Orchestrator functions can wait for external events to update an orchestration instance. This Durable Functions feature often is useful for handling a human interaction or other external callbacks.</td>
+</tr>
+<tr>
+<td>Error handling</td>
+<td>Orchestrator functions can use the error-handling features of the programming language.</td>
+</tr>
+<tr>
+<td>Critical sections</td>
+<td>To mitigate race conditions when interacting with external systems, orchestrator functions can define  <em>critical sections</em>  using a  <code>LockAsync</code>  method in .NET.</td>
+</tr>
+<tr>
+<td>Calling HTTP endpoints</td>
+<td>Orchestrator functions aren’t permitted to do I/O. The typical workaround for this limitation is to wrap any code that needs to do I/O in an activity function.</td>
+</tr>
+<tr>
+<td>Passing multiple parameters</td>
+<td>The recommendation is to pass in an array of objects or to use ValueTuples objects in .NET.</td>
+</tr>
+</tbody>
+</table><h3 id="control-timing-in-durable-functions">Control timing in Durable Functions</h3>
+<p>Durable Functions provides <em>durable timers</em> for use in orchestrator functions to implement delays or to set up timeouts on async actions. Durable timers should be used in orchestrator functions instead of <code>Thread.Sleep</code> and <code>Task.Delay</code> (C#), or <code>setTimeout()</code> and <code>setInterval()</code> (JavaScript), or <code>time.sleep()</code> (Python).</p>
+<p>You create a durable timer by calling the <code>CreateTimer</code> (.NET) method or the <code>createTimer</code> (JavaScript) method of the orchestration trigger binding. The method returns a task that completes on a specified date and time.</p>
+<h4 id="usage-for-delay">Usage for delay</h4>
+<pre><code>[FunctionName("BillingIssuer")]
+public static async Task Run(
+    [OrchestrationTrigger] IDurableOrchestrationContext context)
+{
+    for (int i = 0; i &lt; 10; i++)
+    {
+        DateTime deadline = context.CurrentUtcDateTime.Add(TimeSpan.FromDays(i + 1));
+        await context.CreateTimer(deadline, CancellationToken.None);
+        await context.CallActivityAsync("SendBillingEvent");
+    }
+}
+</code></pre>
+<h4 id="usage-for-timeout">Usage for timeout</h4>
+<pre><code>[FunctionName("TryGetQuote")]
+public static async Task&lt;bool&gt; Run(
+    [OrchestrationTrigger] IDurableOrchestrationContext context)
+{
+    TimeSpan timeout = TimeSpan.FromSeconds(30);
+    DateTime deadline = context.CurrentUtcDateTime.Add(timeout);
+
+    using (var cts = new CancellationTokenSource())
+    {
+        Task activityTask = context.CallActivityAsync("GetQuote");
+        Task timeoutTask = context.CreateTimer(deadline, cts.Token);
+
+        Task winner = await Task.WhenAny(activityTask, timeoutTask);
+        if (winner == activityTask)
+        {
+            // success case
+            cts.Cancel();
+            return true;
+        }
+        else
+        {
+            // timeout case
+            return false;
+        }
+    }
+}
+</code></pre>
+<h3 id="send-and-wait-for-events">Send and wait for events</h3>
+<h4 id="wait-for-events">Wait for events</h4>
+<p>The  <code>WaitForExternalEvent</code>  (.NET),  <code>waitForExternalEvent</code>  (JavaScript), and  <code>wait_for_external_event</code>  (Python) methods of the orchestration trigger binding allows an orchestrator function to asynchronously wait and listen for an external event. The listening orchestrator function declares the  <em>name</em>  of the event and the  <em>shape of the data</em>  it expects to receive.</p>
+<p>[FunctionName(“BudgetApproval”)] public static async Task Run( [OrchestrationTrigger] IDurableOrchestrationContext context) { bool approved = await context.WaitForExternalEvent(“Approval”); if (approved) { // approval granted - do the approved action } else { // approval denied - send a notification } }</p>
+<h4 id="send-events">Send events</h4>
+<p>The <code>RaiseEventAsync</code> (.NET) or <code>raiseEvent</code> (JavaScript) method of the orchestration client binding sends the events that <code>WaitForExternalEvent</code> (.NET) or <code>waitForExternalEvent</code> (JavaScript) waits for. The <code>RaiseEventAsync</code> method takes <em>eventName</em> and <em>eventData</em> as parameters. The event data must be JSON-serializable.</p>
+<pre><code>[FunctionName("ApprovalQueueProcessor")]
+public static async Task Run(
+    [QueueTrigger("approval-queue")] string instanceId,
+    [DurableClient] IDurableOrchestrationClient client)
+{
+    await client.RaiseEventAsync(instanceId, "Approval", true);
+}
+</code></pre>
+<h1 id="az-204-develop-solutions-that-use-blob-storage">AZ-204: Develop solutions that use Blob storage</h1>
+<h2 id="explore-azure-blob-storage">Explore Azure Blob storage</h2>
+<h3 id="explore-azure-blob-storage-1">Explore Azure Blob storage</h3>
+<p>Azure Blob storage is Microsoft’s object storage solution for the cloud. Blob storage is optimized for storing massive amounts of unstructured data.</p>
+<p>Blob storage is designed for:</p>
+<ul>
+<li>Serving images or documents directly to a browser.</li>
+<li>Storing files for distributed access.</li>
+<li>Streaming video and audio.</li>
+<li>Writing to log files.</li>
+<li>Storing data for backup and restore, disaster recovery, and archiving.</li>
+<li>Storing data for analysis by an on-premises or Azure-hosted service.</li>
+</ul>
 
     </div>
   </div>
