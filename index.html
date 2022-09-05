@@ -51,6 +51,11 @@
 <li><a href="#work-with-azure-blob-storage">Work with Azure Blob storage</a></li>
 </ul>
 </li>
+<li><a href="#az-204-develop-solutions-that-use-azure-cosmos-db">AZ-204: Develop solutions that use Azure Cosmos DB</a>
+<ul>
+<li><a href="#explore-azure-cosmos-db">Explore Azure Cosmos DB</a></li>
+</ul>
+</li>
 </ul>
 
     </div>
@@ -1681,7 +1686,123 @@ The URI syntax for retrieving metadata headers on a container is as follows:</p>
 <li><code>Origin</code></li>
 <li><code>Range</code></li>
 </ul>
-<p><a href="https://docs.microsoft.com/en-us/learn/paths/az-204-develop-solutions-that-use-azure-cosmos-db/">AZ-204: Develop solutions that use Azure Cosmos DB - Learn | Microsoft Docs</a></p>
+<h1 id="az-204-develop-solutions-that-use-azure-cosmos-db">AZ-204: Develop solutions that use Azure Cosmos DB</h1>
+<h2 id="explore-azure-cosmos-db">Explore Azure Cosmos DB</h2>
+<h3 id="identify-key-benefits-of-azure-cosmos-db">Identify key benefits of Azure Cosmos DB</h3>
+<p>Azure Cosmos DB is a globally distributed database system that allows you to read and write data from the local replicas of your database and it transparently replicates the data to all the regions associated with your Cosmos account.</p>
+<p>Azure Cosmos DB is designed to provide low latency, elastic scalability of throughput, well-defined semantics for data consistency, and high availability. To lower the latency, place the data close to where your users are.</p>
+<h4 id="key-benefits-of-global-distribution">Key benefits of global distribution</h4>
+<p>With its novel multi-master replication protocol, every region supports both writes and reads. The multi-master capability also enables:</p>
+<ul>
+<li>Unlimited elastic write and read scalability.</li>
+<li>99.999% read and write availability all around the world.</li>
+<li>Guaranteed reads and writes served in less than 10 milliseconds at the 99th percentile.</li>
+<li></li>
+</ul>
+<p>Your application can perform near real-time reads and writes against all the regions you chose for your database. Azure Cosmos DB internally handles the data replication between regions with consistency level guarantees of the level you’ve selected.</p>
+<h3 id="explore-the-resource-hierarchy">Explore the resource hierarchy</h3>
+<p>The Azure Cosmos account is the fundamental unit of global distribution and high availability. Your Azure Cosmos account contains a unique DNS name and you can manage an account by using the Azure portal or the Azure CLI, or by using different language-specific SDKs.</p>
+<h4 id="elements-in-an-azure-cosmos-account">Elements in an Azure Cosmos account</h4>
+<p>An Azure Cosmos container is the fundamental unit of scalability. You can virtually have an unlimited provisioned throughput (RU/s) and storage on a container. Azure Cosmos DB transparently partitions your container using the logical partition key that you specify in order to elastically scale your provisioned throughput and storage.</p>
+<p>Currently, you can create a maximum of 50 Azure Cosmos accounts under an Azure subscription (this is a soft limit that can be increased via support request).</p>
+<p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/explore-azure-cosmos-db/media/cosmos-entities.png" alt="Image showing the hierarchy of Azure Cosmos DB entities: Database accounts are at the top, Databases are grouped under accounts, Containers are grouped under databases."></p>
+<h4 id="azure-cosmos-databases">Azure Cosmos databases</h4>
+<p>A database is analogous to a namespace. A database is the unit of management for a set of Azure Cosmos containers.</p>
+<h4 id="azure-cosmos-containers">Azure Cosmos containers</h4>
+<p>An Azure Cosmos container is the unit of scalability both for provisioned throughput and storage. A container is horizontally partitioned and then replicated across multiple regions.</p>
+<p>When you create a container, you configure throughput in one of the following modes:</p>
+<ul>
+<li>
+<p><strong>Dedicated provisioned throughput mode</strong>: The throughput provisioned on a container is exclusively reserved for that container and it is backed by the SLAs.</p>
+</li>
+<li>
+<p><strong>Shared provisioned throughput mode</strong>: These containers share the provisioned throughput with the other containers in the same database (excluding containers that have been configured with dedicated provisioned throughput).</p>
+</li>
+</ul>
+<p>A container is a schema-agnostic container of items. Items in a container can have arbitrary schemas.</p>
+<h4 id="azure-cosmos-items">Azure Cosmos items</h4>
+<p>Depending on which API you use, an Azure Cosmos item can represent either a document in a collection, a row in a table, or a node or edge in a graph.</p>
+
+<table>
+<thead>
+<tr>
+<th>Cosmos entity</th>
+<th>SQL API</th>
+<th>Cassandra API</th>
+<th>Azure Cosmos DB API for MongoDB</th>
+<th>Gremlin API</th>
+<th>Table API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Azure Cosmos item</td>
+<td>Item</td>
+<td>Row</td>
+<td>Document</td>
+<td>Node or edge</td>
+<td>Item</td>
+</tr>
+</tbody>
+</table><h3 id="explore-consistency-levels">Explore consistency levels</h3>
+<p>Azure Cosmos DB approaches data consistency as a spectrum of choices instead of two extremes. Strong consistency and eventual consistency are at the ends of the spectrum, but there are many consistency choices along the spectrum. Developers can use these options to make precise choices and granular tradeoffs with respect to high availability and performance.</p>
+<p>Consistency spectrum:</p>
+<ul>
+<li><em>strong</em></li>
+<li><em>bounded staleness</em></li>
+<li><em>session</em></li>
+<li><em>consistent prefix</em></li>
+<li><em>eventual</em></li>
+</ul>
+<p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/explore-azure-cosmos-db/media/five-consistency-levels.png" alt="Image showing data consistency as a spectrum"></p>
+<p>The consistency levels are region-agnostic and are guaranteed for all operations regardless of the region from which the reads and writes are served.</p>
+<h3 id="choose-the-right-consistency-level">Choose the right consistency level</h3>
+<h4 id="sql-api-and-table-api">SQL API and Table API</h4>
+<ul>
+<li>For many real-world scenarios, session consistency is optimal and it’s the recommended option.
+<ul>
+<li>If your application requires strong consistency, it is recommended that you use bounded staleness consistency level.</li>
+</ul>
+</li>
+<li>If you need the highest throughput and the lowest latency, then use eventual consistency level.</li>
+<li>If you need even higher data durability without sacrificing performance, you can create a custom consistency level at the application layer.</li>
+</ul>
+<h4 id="cassandra-mongodb-and-gremlin-apis">Cassandra, MongoDB, and Gremlin APIs</h4>
+<p>Azure Cosmos DB provides native support for wire protocol-compatible APIs for popular databases. These include MongoDB, Apache Cassandra, and Gremlin.</p>
+<h4 id="consistency-guarantees-in-practice">Consistency guarantees in practice</h4>
+<ul>
+<li>When the consistency level is set to  <strong>bounded staleness</strong>, Cosmos DB guarantees that the clients always read the value of a previous write, with a lag bounded by the staleness window.
+<ul>
+<li>When the consistency level is set to  <strong>strong</strong>, the staleness window is equivalent to zero, and the clients are guaranteed to read the latest committed value of the write operation.</li>
+<li>For the remaining three consistency levels, the staleness window is largely dependent on your workload. For example, if there are no write operations on the database, a read operation with  <strong>eventual</strong>,  <strong>session</strong>, or  <strong>consistent prefix</strong>  consistency levels is likely to yield the same results as a read operation with strong consistency level.</li>
+</ul>
+</li>
+</ul>
+<p>If your Azure Cosmos account is configured with a consistency level other than the strong consistency, you can find out the probability that your clients may get strong and consistent reads for your workloads by looking at the <em>Probabilistically Bounded Staleness</em> (PBS) metric.</p>
+<h3 id="explore-supported-apis">Explore supported APIs</h3>
+<p>These APIs allow your applications to treat Azure Cosmos DB as if it were various other databases technologies, without the overhead of management, and scaling approaches.</p>
+<h4 id="coresql-api">Core(SQL) API</h4>
+<p>Azure Cosmos DB SQL API accounts provide support for querying items using the Structured Query Language (SQL) syntax, one of the most familiar and popular query languages.</p>
+<p>This API stores data in document format. It offers the best end-to-end experience as we have full control over the interface, service, and the SDK client libraries. Any new feature that is rolled out to Azure Cosmos DB is first available on SQL API accounts.</p>
+<h4 id="api-for-mongodb">API for MongoDB</h4>
+<p>This API stores data in a document structure, via BSON format. It is compatible with MongoDB wire protocol; however, it does not use any native MongoDB related code.</p>
+<h4 id="cassandra-api">Cassandra API</h4>
+<p>This API stores data in column-oriented schema. Cassandra API is wire protocol compatible with the Apache Cassandra.</p>
+<h4 id="table-api">Table API</h4>
+<p>This API stores data in key/value format. If you are currently using Azure Table storage, you may see some limitations in latency, scaling, throughput, global distribution, index management, low query performance. Table API overcomes these limitations and it’s recommended to migrate your app if you want to use the benefits of Azure Cosmos DB.</p>
+<h4 id="gremlin-api">Gremlin API</h4>
+<p>This API allows users to make graph queries and stores data as edges and vertices.</p>
+<h3 id="discover-request-units">Discover request units</h3>
+<p>With Azure Cosmos DB, you pay for the throughput you provision and the storage you consume on an hourly basis. Throughput must be provisioned to ensure that sufficient system resources are available for your Azure Cosmos database at all times.</p>
+<p>The cost of all database operations is normalized by Azure Cosmos DB and is expressed by <em>request units</em> (or RUs, for short). The cost to do a point read, which is fetching a single item by its ID and partition key value, for a 1KB item is 1RU.</p>
+<p><img src="https://docs.microsoft.com/en-us/learn/wwl-azure/explore-azure-cosmos-db/media/request-units.png" alt="Image showing how database operations consume request units."></p>
+<p>The type of Azure Cosmos account you’re using determines the way consumed RUs get charged. There are three modes in which you can create an account:</p>
+<p><strong>Provisioned throughput mode</strong>: In this mode, you provision the number of RUs for your application on a per-second basis in increments of 100 RUs per second.</p>
+<ul>
+<li><strong>Serverless mode</strong>: In this mode, you don’t have to provision any throughput when creating resources in your Azure Cosmos account. At the end of your billing period, you get billed for the amount of request units that has been consumed by your database operations.</li>
+<li><strong>Autoscale mode</strong>: In this mode, you can automatically and instantly scale the throughput (RU/s) of your database or container based on it’s usage. This mode is well suited for mission-critical workloads that have variable or unpredictable traffic patterns, and require SLAs on high performance and scale.</li>
+</ul>
+<p><a href="https://docs.microsoft.com/en-us/learn/modules/implement-partitioning-azure-cosmos-db/">Implement partitioning in Azure Cosmos DB - Learn | Microsoft Docs</a></p>
 
     </div>
   </div>
