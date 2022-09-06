@@ -54,6 +54,7 @@
 <li><a href="#az-204-develop-solutions-that-use-azure-cosmos-db">AZ-204: Develop solutions that use Azure Cosmos DB</a>
 <ul>
 <li><a href="#explore-azure-cosmos-db">Explore Azure Cosmos DB</a></li>
+<li><a href="#implement-partitioning-in-azure-cosmos-db">Implement partitioning in Azure Cosmos DB</a></li>
 </ul>
 </li>
 </ul>
@@ -1802,7 +1803,68 @@ The URI syntax for retrieving metadata headers on a container is as follows:</p>
 <li><strong>Serverless mode</strong>: In this mode, you don’t have to provision any throughput when creating resources in your Azure Cosmos account. At the end of your billing period, you get billed for the amount of request units that has been consumed by your database operations.</li>
 <li><strong>Autoscale mode</strong>: In this mode, you can automatically and instantly scale the throughput (RU/s) of your database or container based on it’s usage. This mode is well suited for mission-critical workloads that have variable or unpredictable traffic patterns, and require SLAs on high performance and scale.</li>
 </ul>
-<p><a href="https://docs.microsoft.com/en-us/learn/modules/implement-partitioning-azure-cosmos-db/">Implement partitioning in Azure Cosmos DB - Learn | Microsoft Docs</a></p>
+<h2 id="implement-partitioning-in-azure-cosmos-db">Implement partitioning in Azure Cosmos DB</h2>
+<h3 id="explore-partitions">Explore partitions</h3>
+<p>Azure Cosmos DB uses partitioning to scale individual containers in a database to meet the performance needs of your application.</p>
+<p>In partitioning, the items in a container are divided into distinct subsets called <em>logical partitions</em>. Logical partitions are formed based on the value of a <em>partition key</em> that is associated with each item in a container.</p>
+<p>In addition to a partition key that determines the item’s logical partition, each item in a container has an <em>item ID</em> which is unique within a logical partition. Combining the partition key and the <em>item ID</em> creates the item’s <em>index</em>, which uniquely identifies the item. Choosing a partition key is an important decision that will affect your application’s performance.</p>
+<h4 id="logical-partitions">Logical partitions</h4>
+<ul>
+<li>A logical partition consists of a set of items that have the same partition key.</li>
+<li>A logical partition also defines the scope of database transactions.</li>
+</ul>
+<h4 id="physical-partitions">Physical partitions</h4>
+<p>A container is scaled by distributing data and throughput across physical partitions. Internally, one or more logical partitions are mapped to a single physical partition. Typically smaller containers have many logical partitions but they only require a single physical partition. Unlike logical partitions, physical partitions are an internal implementation of the system and they are entirely managed by Azure Cosmos DB.</p>
+<p>The number of physical partitions in your container depends on the following:</p>
+<ul>
+<li>The number of throughput provisioned. The 10,000 RU/s limit for physical partitions implies that logical partitions also have a 10,000 RU/s limit, as each logical partition is only mapped to one physical partition.</li>
+<li>The total data storage (each individual physical partition can store up to 50GB data).</li>
+</ul>
+<p>A partition key design that doesn’t distribute requests evenly might result in too many requests directed to a small subset of partitions that become “hot.”</p>
+<h3 id="choose-a-partition-key">Choose a partition key</h3>
+<p>A partition key has two components: <strong>partition key path</strong> and the <strong>partition key value</strong>.</p>
+<ul>
+<li>The partition key path (for example: “/userId”) accepts alphanumeric and underscore(_) characters. You can also use nested objects by using the standard path notation(/).</li>
+<li>The partition key value (for example: “Andrew”) can be of string or numeric types.</li>
+</ul>
+<p>Once you select your partition key, it is not possible to change it in-place.</p>
+<p>For  <strong>all</strong>  containers, your partition key should:</p>
+<ul>
+<li>Be a property that has a value which does not change.</li>
+<li>Have a high cardinality. In other words, the property should have a wide range of possible values.</li>
+<li>Spread request unit (RU) consumption and data storage evenly across all logical partitions. This ensures even RU consumption and storage distribution across your physical partitions.</li>
+</ul>
+<h4 id="partition-keys-for-read-heavy-containers">Partition keys for read-heavy containers</h4>
+<p>For large read-heavy containers you might want to choose a partition key that appears frequently as a filter in your queries.</p>
+<p>However, if your container is small, you probably don’t have enough physical partitions to need to worry about the performance impact of cross-partition queries. If your container could grow to more than a few physical partitions, then you should make sure you pick a partition key that minimizes cross-partition queries.</p>
+<p>Your container will require more than a few physical partitions when either of the following are true:</p>
+<ul>
+<li>Your container will have over 30,000 RU’s provisioned</li>
+<li>Your container will store over 100 GB of data</li>
+</ul>
+<h4 id="using-item-id-as-the-partition-key">Using item ID as the partition key</h4>
+<p>If your container has a property that has a wide range of possible values, it is likely a great partition key choice. One possible example of such a property is the <em>item ID</em>. For small read-heavy containers or write-heavy containers of any size, the <em>item ID</em> is naturally a great choice for the partition key.</p>
+<p>The  <em>item ID</em>  is a great partition key choice for the following reasons:</p>
+<ul>
+<li>There are a wide range of possible values (one unique  <em>item ID</em>  per item).</li>
+<li>Because there is a unique  <em>item ID</em>  per item, the  <em>item ID</em>  does a great job at evenly balancing RU consumption and data storage.</li>
+<li>You can easily do efficient point reads since you’ll always know an item’s partition key if you know its  <em>item ID</em>.</li>
+</ul>
+<p>Some things to consider when selecting the  <em>item ID</em>  as the partition key include:</p>
+<ul>
+<li>If the  <em>item ID</em>  is the partition key, it will become a unique identifier throughout your entire container. You won’t be able to have items that have a duplicate  <em>item ID</em>.</li>
+<li>If you have a read-heavy container that has a lot of physical partitions, queries will be more efficient if they have an equality filter with the  <em>item ID</em>.</li>
+<li>You can’t run stored procedures or triggers across multiple logical partitions.</li>
+</ul>
+<h3 id="create-a-synthetic-partition-key">Create a synthetic partition key</h3>
+<p>It’s the best practice to have a partition key with many distinct values, such as hundreds or thousands. The goal is to distribute your data and workload evenly across the items associated with these partition key values. If such a property doesn’t exist in your data, you can construct a <em>synthetic partition key</em>.</p>
+<h4 id="concatenate-multiple-properties-of-an-item">Concatenate multiple properties of an item</h4>
+<p>You can form a partition key by concatenating multiple property values into a single artificial <code>partitionKey</code> property.</p>
+<h4 id="use-a-partition-key-with-a-random-suffix">Use a partition key with a random suffix</h4>
+<p>Another possible strategy to distribute the workload more evenly is to append a random number at the end of the partition key value. When you distribute items in this way, you can perform parallel write operations across partitions.</p>
+<h4 id="use-a-partition-key-with-pre-calculated-suffixes">Use a partition key with pre-calculated suffixes</h4>
+<p>The random suffix strategy can greatly improve write throughput, but it’s difficult to read a specific item. You don’t know the suffix value that was used when you wrote the item. To make it easier to read individual items, use the pre-calculated suffixes strategy. Instead of using a random number to distribute the items among the partitions, use a number that is calculated based on something that you want to query. Before your application writes the item to the container, it can calculate a hash suffix based on a cloumn that is often used for querying and append it to the partition key date.</p>
+<p><a href="https://docs.microsoft.com/en-us/learn/modules/work-with-cosmos-db/">Work with Azure Cosmos DB - Learn | Microsoft Docs</a></p>
 
     </div>
   </div>
