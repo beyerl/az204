@@ -55,6 +55,10 @@
 <ul>
 <li><a href="#explore-azure-cosmos-db">Explore Azure Cosmos DB</a></li>
 <li><a href="#implement-partitioning-in-azure-cosmos-db">Implement partitioning in Azure Cosmos DB</a></li>
+<li><a href="#work-with-azure-cosmos-db">Work with Azure Cosmos DB</a></li>
+<li><a href="#database-examples">Database examples</a></li>
+<li><a href="#container-examples">Container examples</a></li>
+<li><a href="#item-examples">Item examples</a></li>
 </ul>
 </li>
 </ul>
@@ -1864,7 +1868,112 @@ The URI syntax for retrieving metadata headers on a container is as follows:</p>
 <p>Another possible strategy to distribute the workload more evenly is to append a random number at the end of the partition key value. When you distribute items in this way, you can perform parallel write operations across partitions.</p>
 <h4 id="use-a-partition-key-with-pre-calculated-suffixes">Use a partition key with pre-calculated suffixes</h4>
 <p>The random suffix strategy can greatly improve write throughput, but it’s difficult to read a specific item. You don’t know the suffix value that was used when you wrote the item. To make it easier to read individual items, use the pre-calculated suffixes strategy. Instead of using a random number to distribute the items among the partitions, use a number that is calculated based on something that you want to query. Before your application writes the item to the container, it can calculate a hash suffix based on a cloumn that is often used for querying and append it to the partition key date.</p>
-<p><a href="https://docs.microsoft.com/en-us/learn/modules/work-with-cosmos-db/">Work with Azure Cosmos DB - Learn | Microsoft Docs</a></p>
+<h2 id="work-with-azure-cosmos-db">Work with Azure Cosmos DB</h2>
+<h3 id="explore-microsoft-.net-sdk-v3-for-azure-cosmos-db">Explore Microsoft .NET SDK v3 for Azure Cosmos DB</h3>
+<p>Below are examples showing some of the key operations you should be familiar with.</p>
+<h4 id="cosmosclient">CosmosClient</h4>
+<p>Creates a new  <code>CosmosClient</code>  with a connection string.  <code>CosmosClient</code>  is thread-safe. Its recommended to maintain a single instance of  <code>CosmosClient</code>  per lifetime of the application which enables efficient connection management and performance.</p>
+<pre><code>CosmosClient client = new CosmosClient(endpoint, key);
+</code></pre>
+<h2 id="database-examples">Database examples</h2>
+<h3 id="create-a-database">Create a database</h3>
+<pre><code>// An object containing relevant information about the response
+DatabaseResponse databaseResponse = await client.CreateDatabaseIfNotExistsAsync(databaseId, 10000);
+</code></pre>
+<h3 id="read-a-database-by-id">Read a database by ID</h3>
+<p>Reads a database from the Azure Cosmos service as an asynchronous operation.</p>
+<pre><code>DatabaseResponse readResponse = await database.ReadAsync();
+
+</code></pre>
+<h3 id="delete-a-database">Delete a database</h3>
+<p>Delete a Database as an asynchronous operation.</p>
+<pre><code>await database.DeleteAsync();
+</code></pre>
+<h2 id="container-examples">Container examples</h2>
+<h3 id="create-a-container">Create a container</h3>
+<pre><code>// Set throughput to the minimum value of 400 RU/s
+ContainerResponse simpleContainer = await database.CreateContainerIfNotExistsAsync(
+    id: containerId,
+    partitionKeyPath: partitionKey,
+    throughput: 400);
+
+</code></pre>
+<h3 id="get-a-container-by-id">Get a container by ID</h3>
+<pre><code>Container container = database.GetContainer(containerId);
+ContainerProperties containerProperties = await container.ReadContainerAsync();
+
+</code></pre>
+<h3 id="delete-a-container">Delete a container</h3>
+<p>Delete a Container as an asynchronous operation.</p>
+<p>C#Copy</p>
+<pre><code>await database.GetContainer(containerId).DeleteContainerAsync();
+
+</code></pre>
+<h2 id="item-examples">Item examples</h2>
+<h3 id="create-an-item">Create an item</h3>
+<p>Use the  <code>Container.CreateItemAsync</code>  method to create an item. The method requires a JSON serializable object that must contain an  <code>id</code>  property, and a  <code>partitionKey</code>.</p>
+<p>C#Copy</p>
+<pre><code>ItemResponse&lt;SalesOrder&gt; response = await container.CreateItemAsync(salesOrder, new PartitionKey(salesOrder.AccountNumber));
+
+</code></pre>
+<h3 id="read-an-item">Read an item</h3>
+<p>Use the  <code>Container.ReadItemAsync</code>  method to read an item. The method requires type to serialize the item to along with an  <code>id</code>  property, and a  <code>partitionKey</code>.</p>
+<pre><code>string id = "[id]";
+string accountNumber = "[partition-key]";
+ItemResponse&lt;SalesOrder&gt; response = await container.ReadItemAsync(id, new PartitionKey(accountNumber));
+
+</code></pre>
+<h3 id="query-an-item">Query an item</h3>
+<p>The  <code>Container.GetItemQueryIterator</code>  method creates a query for items under a container in an Azure Cosmos database using a SQL statement with parameterized values. It returns a  <code>FeedIterator</code>.</p>
+<pre><code>QueryDefinition query = new QueryDefinition(
+    "select * from sales s where s.AccountNumber = @AccountInput ")
+    .WithParameter("@AccountInput", "Account1");
+
+FeedIterator&lt;SalesOrder&gt; resultSet = container.GetItemQueryIterator&lt;SalesOrder&gt;(
+    query,
+    requestOptions: new QueryRequestOptions()
+    {
+        PartitionKey = new PartitionKey("Account1"),
+        MaxItemCount = 1
+    });
+</code></pre>
+<h3 id="create-stored-procedures">Create stored procedures</h3>
+<p>Azure Cosmos DB provides language-integrated, transactional execution of JavaScript that lets you write <strong>stored procedures</strong>, <strong>triggers</strong>, and <strong>user-defined functions (UDFs)</strong>. To call a stored procedure, trigger, or user-defined function, you need to register it.</p>
+<h4 id="writing-stored-procedures">Writing stored procedures</h4>
+<p>Stored procedures can create, update, read, query, and delete items inside an Azure Cosmos container. Stored procedures are registered per collection, and can operate on any document or an attachment present in that collection.</p>
+<p>Here is a simple stored procedure that returns a “Hello World” response.</p>
+<pre><code>var helloWorldStoredProc = {
+    id: "helloWorld",
+    serverScript: function () {
+        var context = getContext();
+        var response = context.getResponse();
+
+        response.setBody("Hello, World");
+    }
+}
+</code></pre>
+<p>The context object provides access to all operations that can be performed in Azure Cosmos DB, as well as access to the request and response objects.</p>
+<h4 id="create-an-item-using-stored-procedure">Create an item using stored procedure</h4>
+<p>When you create an item by using stored procedure it is inserted into the Azure Cosmos container and an ID for the newly created item is returned. Creating an item is an asynchronous operation and depends on the JavaScript callback functions. The callback function has two parameters:</p>
+<ul>
+<li>The error object in case the operation fails</li>
+<li>A return value</li>
+</ul>
+<p>The following example stored procedure takes an input parameter named  <code>documentToCreate</code>  and the parameter’s value is the body of a document to be created in the current collection. The callback throws an error if the operation fails. Otherwise, it sets the  <code>id</code>  of the created document as the body of the response to the client.</p>
+<pre><code>function createSampleDocument(documentToCreate) {
+    var context = getContext();
+    var collection = context.getCollection();
+    var accepted = collection.createDocument(
+        collection.getSelfLink(),
+        documentToCreate,
+        function (error, documentCreated) {                 
+            context.getResponse().setBody(documentCreated.id)
+        }
+    );
+    if (!accepted) return;
+}
+</code></pre>
+<p><a href="https://docs.microsoft.com/en-us/learn/modules/work-with-cosmos-db/4-cosmos-db-stored-procedures">Create stored procedures - Learn | Microsoft Docs</a></p>
 
     </div>
   </div>
