@@ -61,6 +61,11 @@
 <li><a href="#item-examples">Item examples</a></li>
 </ul>
 </li>
+<li><a href="#az-204-implement-infrastructure-as-a-service-solutions">AZ-204: Implement infrastructure as a service solutions</a>
+<ul>
+<li><a href="#provision-virtual-machines-in-azure">Provision virtual machines in Azure</a></li>
+</ul>
+</li>
 </ul>
 
     </div>
@@ -1973,7 +1978,77 @@ FeedIterator&lt;SalesOrder&gt; resultSet = container.GetItemQueryIterator&lt;Sal
     if (!accepted) return;
 }
 </code></pre>
-<p><a href="https://docs.microsoft.com/en-us/learn/modules/work-with-cosmos-db/4-cosmos-db-stored-procedures">Create stored procedures - Learn | Microsoft Docs</a></p>
+<h4 id="arrays-as-input-parameters-for-stored-procedures">Arrays as input parameters for stored procedures</h4>
+<p>When defining a stored procedure in the Azure portal, input parameters are always sent as a string to the stored procedure. Even if you pass an array of strings as an input, the array is converted to string and sent to the stored procedure. To work around this, you can define a function within your stored procedure to parse the string as an array.</p>
+<h4 id="bounded-execution">Bounded execution</h4>
+<p>All Azure Cosmos DB operations must complete within a limited amount of time. Stored procedures have a limited amount of time to run on the server.</p>
+<h4 id="transactions-within-stored-procedures">Transactions within stored procedures</h4>
+<p>You can implement transactions on items within a container by using a stored procedure. JavaScript functions can implement a continuation-based model to batch or resume execution.<br>
+<img src="https://docs.microsoft.com/en-us/training/wwl-azure/work-with-cosmos-db/media/transaction-continuation-model.png" alt="This diagram depicts how the transaction continuation model can be used to repeat a server-side function until the function finishes its entire processing workload."></p>
+<h3 id="create-triggers-and-user-defined-functions">Create triggers and user-defined functions</h3>
+<p>Azure Cosmos DB supports pre-triggers and post-triggers. Pre-triggers are executed before modifying a database item and post-triggers are executed after modifying a database item. Triggers are not automatically executed, they must be specified for each database operation where you want them to execute.</p>
+<h4 id="pre-triggers">Pre-triggers</h4>
+<p>Pre-triggers cannot have any input parameters. The request object in the trigger is used to manipulate the request message associated with the operation.</p>
+<p>When triggers are registered, you can specify the operations that it can run with. This trigger should be created with a <code>TriggerOperation</code> value of <code>TriggerOperation.Create</code>, which means using the trigger in a replace operation is not permitted.</p>
+<h4 id="post-triggers">Post-triggers</h4>
+<p>One thing that is important to note is the transactional execution of triggers in Azure Cosmos DB. The post-trigger runs as part of the same transaction for the underlying item itself. An exception during the post-trigger execution will fail the whole transaction. Anything committed will be rolled back and an exception returned.</p>
+<h4 id="user-defined-functions">User-defined functions</h4>
+<p>This user-defined functions are used inside a queries.</p>
+<h1 id="az-204-implement-infrastructure-as-a-service-solutions">AZ-204: Implement infrastructure as a service solutions</h1>
+<h2 id="provision-virtual-machines-in-azure">Provision virtual machines in Azure</h2>
+<h3 id="explore-azure-virtual-machines">Explore Azure virtual machines</h3>
+<p>Azure virtual machines (VM) is one of several types of on-demand, scalable computing resources that Azure offers. Typically, you choose a VM when you need more control over the computing environment than the other choices offer.</p>
+<p>An Azure virtual machine gives you the flexibility of virtualization without having to buy and maintain the physical hardware that runs it. However, you still need to maintain the VM by performing tasks, such as configuring, patching, and installing the software that runs on it.</p>
+<p>Azure virtual machines can be used in various ways:</p>
+<ul>
+<li>Development and test</li>
+<li>Applications in the cloud</li>
+<li>Extended datacenter</li>
+</ul>
+<h4 id="design-considerations-for-virtual-machine-creation">Design considerations for virtual machine creation</h4>
+<p>There are always a multitude of design considerations when you build out an application infrastructure in Azure. These aspects of a VM are important to think about before you start:</p>
+<ul>
+<li>
+<p><strong>Availability</strong>: Azure supports a single instance virtual machine Service Level Agreement of 99.9% provided you deploy the VM with premium storage for all disks.</p>
+</li>
+<li>
+<p><strong>VM size</strong>: The size of the VM that you use is determined by the workload that you want to run.</p>
+</li>
+<li>
+<p><strong>VM limits</strong>: Your subscription has default quota limits in place that could impact the deployment of many VMs for your project. The current limit on a per subscription basis is 20 VMs per region.</p>
+</li>
+<li>
+<p><strong>VM image</strong>: You can either use your own image, or you can use one of the images in the Azure Marketplace.</p>
+</li>
+<li>
+<p><strong>VM disks</strong>: There are two components that make up this area. The type of disks which determines the performance level and the storage account type that contains the disks. Azure provides two types of disks:</p>
+<ul>
+<li>
+<p><strong>Standard disks</strong>: Backed by HDDs, and delivers cost-effective storage while still being performant. Standard disks are ideal for a cost effective dev and test workload.</p>
+</li>
+<li>
+<p><strong>Premium disks</strong>: Backed by SSD-based, high-performance, low-latency disk. Perfect for VMs running production workload.</p>
+</li>
+</ul>
+<p>And, there are two options for the disk storage:</p>
+<ul>
+<li>
+<p><strong>Managed disks</strong>: Managed disks are the newer and recommended disk storage model and they are managed by Azure.</p>
+</li>
+<li>
+<p><strong>Unmanaged disks</strong>: With unmanaged disks, you’re responsible for the storage accounts that hold the virtual hard disks (VHDs) that correspond to your VM disks.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="virtual-machine-extensions">Virtual machine extensions</h4>
+<p>Windows VMs have extensions which give your VM additional capabilities through post deployment configuration and automated tasks. These common tasks can be accomplished using extensions:</p>
+<ul>
+<li><strong>Run custom scripts</strong>: The Custom Script Extension helps you configure workloads on the VM by running your script when the VM is provisioned.</li>
+<li><strong>Deploy and manage configurations</strong>: The PowerShell Desired State Configuration (DSC) Extension helps you set up DSC on a VM to manage configurations and environments.</li>
+<li><strong>Collect diagnostics data</strong>: The Azure Diagnostics Extension helps you configure the VM to collect diagnostics data that can be used to monitor the health of your application.</li>
+</ul>
+<p><a href="https://docs.microsoft.com/en-us/training/modules/provision-virtual-machines-azure/3-azure-virtual-machine-availability-options">https://docs.microsoft.com/en-us/training/modules/provision-virtual-machines-azure/3-azure-virtual-machine-availability-options</a></p>
 
     </div>
   </div>
