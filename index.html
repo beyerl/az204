@@ -64,6 +64,7 @@
 <li><a href="#az-204-implement-infrastructure-as-a-service-solutions">AZ-204: Implement infrastructure as a service solutions</a>
 <ul>
 <li><a href="#provision-virtual-machines-in-azure">Provision virtual machines in Azure</a></li>
+<li><a href="#create-and-deploy-azure-resource-manager-templates">Create and deploy Azure Resource Manager templates</a></li>
 </ul>
 </li>
 </ul>
@@ -2048,7 +2049,99 @@ FeedIterator&lt;SalesOrder&gt; resultSet = container.GetItemQueryIterator&lt;Sal
 <li><strong>Deploy and manage configurations</strong>: The PowerShell Desired State Configuration (DSC) Extension helps you set up DSC on a VM to manage configurations and environments.</li>
 <li><strong>Collect diagnostics data</strong>: The Azure Diagnostics Extension helps you configure the VM to collect diagnostics data that can be used to monitor the health of your application.</li>
 </ul>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/provision-virtual-machines-azure/3-azure-virtual-machine-availability-options">https://docs.microsoft.com/en-us/training/modules/provision-virtual-machines-azure/3-azure-virtual-machine-availability-options</a></p>
+<h3 id="compare-virtual-machine-availability-options">Compare virtual machine availability options</h3>
+<h4 id="availability-zones">Availability zones</h4>
+<p>An Availability Zone is a physically separate zone, within an Azure region. There are three Availability Zones per supported Azure region.</p>
+<p>Azure services that support Availability Zones fall into two categories:</p>
+<ul>
+<li><strong>Zonal services</strong>: Where a resource is pinned to a specific zone (for example, virtual machines, managed disks, Standard IP addresses), or</li>
+<li><strong>Zone-redundant services</strong>: When the Azure platform replicates automatically across zones (for example, zone-redundant storage, SQL Database).</li>
+</ul>
+<h4 id="availability-sets">Availability sets</h4>
+<p>An availability set is a logical grouping of VMs that allows Azure to understand how your application is built to provide for redundancy and availability. An availability set is composed of two additional groupings that protect against hardware failures and allow updates to safely be applied - fault domains (FDs) and update domains (UDs).</p>
+<h5 id="fault-domains">Fault domains</h5>
+<p>A fault domain is a logical group of underlying hardware that share a common power source and network switch, similar to a rack within an on-premises datacenter. As you create VMs within an availability set, the Azure platform automatically distributes your VMs across these fault domains.</p>
+<p><img src="https://docs.microsoft.com/en-us/training/wwl-azure/provision-virtual-machines-azure/media/virtual-machine-fault-domains.png" alt="Image showing a representation of a Fault domains. Two separate hardware racks are shown with VMs and databases distributed across each."></p>
+<h5 id="update-domains">Update domains</h5>
+<p>An update domain is a logical group of underlying hardware that can undergo maintenance or be rebooted at the same time. As you create VMs within an availability set, the Azure platform automatically distributes your VMs across these update domains. This approach ensures that at least one instance of your application always remains running as the Azure platform undergoes periodic maintenance.</p>
+<p><img src="https://docs.microsoft.com/en-us/training/wwl-azure/provision-virtual-machines-azure/media/virtual-machine-update-domains.png" alt="Conceptual drawing of the update domain and fault domain configuration. Image shows groups of hardware that can be maintained or rebooted at the same time."></p>
+<h4 id="virtual-machine-scale-sets">Virtual machine scale sets</h4>
+<p>Azure virtual machine scale sets let you create and manage a group of load balanced VMs.</p>
+<h4 id="load-balancer">Load balancer</h4>
+<p>Combine the <a href="https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-overview">Azure Load Balancer</a> with an availability zone or availability set to get the most application resiliency. An Azure load balancer is a Layer-4 (TCP, UDP) load balancer that provides high availability by distributing incoming traffic among healthy VMs.</p>
+<p>You define a front-end IP configuration that contains one or more public IP addresses.</p>
+<p>Virtual machines connect to a load balancer using their virtual network interface card (NIC). To distribute traffic to the VMs, a back-end address pool contains the IP addresses of the virtual (NICs) connected to the load balancer.</p>
+<p>To control the flow of traffic, you define load balancer rules for specific ports and protocols that map to your VMs.</p>
+<h3 id="determine-appropriate-virtual-machine-size">Determine appropriate virtual machine size</h3>
+
+<table>
+<thead>
+<tr>
+<th>VM Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>General Purpose</td>
+<td>Balanced CPU-to-memory ratio. Ideal for testing and development, small to medium databases, and low to medium traffic web servers.</td>
+</tr>
+<tr>
+<td>Compute Optimized</td>
+<td>High CPU-to-memory ratio. Good for medium traffic web servers, network appliances, batch processes, and application servers.</td>
+</tr>
+<tr>
+<td>Memory Optimized</td>
+<td>High memory-to-CPU ratio. Great for relational database servers, medium to large caches, and in-memory analytics.</td>
+</tr>
+<tr>
+<td>Storage Optimized</td>
+<td>High disk throughput and IO ideal for Big Data, SQL, NoSQL databases, data warehousing and large transactional databases.</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td>Specialized virtual machines targeted for heavy graphic rendering and video editing, as well as model training and inferencing (ND) with deep learning. Available with single or multiple GPUs.</td>
+</tr>
+<tr>
+<td>High Performance Compute</td>
+<td>Our fastest and most powerful CPU virtual machines with optional high-throughput network interfaces (RDMA).</td>
+</tr>
+</tbody>
+</table><h2 id="create-and-deploy-azure-resource-manager-templates">Create and deploy Azure Resource Manager templates</h2>
+<h3 id="explore-azure-resource-manager">Explore Azure Resource Manager</h3>
+<p>Azure Resource Manager is the deployment and management service for Azure. It provides a management layer that enables you to create, update, and delete resources in your Azure subscription.</p>
+<p>When a user sends a request from any of the Azure tools, APIs, or SDKs, Resource Manager receives the request. It authenticates and authorizes the request. Resource Manager sends the request to the Azure service, which takes the requested action. Because all requests are handled through the same API, you see consistent results and capabilities in all the different tools.</p>
+<p><img src="https://docs.microsoft.com/en-us/training/wwl-azure/create-deploy-azure-resource-manager-templates/media/consistent-management-layer.png" alt="Resource Manager request model showing how Azure tools, APIs, or SDKs, interact with Azure Resource Manager."></p>
+<h4 id="why-choose-azure-resource-manager-templates">Why choose Azure Resource Manager templates?</h4>
+<ul>
+<li><strong>Declarative syntax</strong>: Azure Resource Manager templates allow you to create and deploy an entire Azure infrastructure declaratively.</li>
+<li><strong>Repeatable results</strong>: Repeatedly deploy your infrastructure throughout the development lifecycle and have confidence your resources are deployed in a consistent manner. Templates are idempotent, which means you can deploy the same template many times and get the same resource types in the same state.
+<ul>
+<li><strong>Orchestration</strong>: You don’t have to worry about the complexities of ordering operations. Resource Manager orchestrates the deployment of interdependent resources so they’re created in the correct order.</li>
+</ul>
+</li>
+</ul>
+<h4 id="template-file">Template file</h4>
+<p>Within your template, you can write template expressions that extend the capabilities of JSON. These expressions make use of the <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions">functions</a> provided by Resource Manager.</p>
+<p>The template has the following sections:</p>
+<ul>
+<li>
+<p>Parameters - Provide values during deployment that allow the same template to be used with different environments.</p>
+</li>
+<li>
+<p>Variables - Define values that are reused in your templates. They can be constructed from parameter values.</p>
+</li>
+<li>
+<p>User-defined functions - Create customized functions that simplify your template.</p>
+</li>
+<li>
+<p>Resources - Specify the resources to deploy.</p>
+</li>
+<li>
+<p>Outputs - Return values from the deployed resources.</p>
+</li>
+</ul>
+<p><a href="https://docs.microsoft.com/en-us/training/modules/create-deploy-azure-resource-manager-templates/3-azure-resource-manager-templates">https://docs.microsoft.com/en-us/training/modules/create-deploy-azure-resource-manager-templates/3-azure-resource-manager-templates</a></p>
 
     </div>
   </div>
