@@ -3062,6 +3062,7 @@ blobContainer.SetAccessPolicy(permissions: new BlobSignedIdentifier[] { identifi
     --account-key &lt;storage account key&gt; \
     --account-name &lt;storage account name&gt; \
 </code></pre>
+<p><strong>hier weiter</strong></p>
 <h2 id="modifying-or-revoking-a-stored-access-policy">Modifying or revoking a stored access policy</h2>
 <p>To modify the parameters of the stored access policy you can call the access control list operation for the resource type to replace the existing policy. For example, if your existing policy grants read and write permissions to a resource, you can modify it to grant only read permissions for all future requests.</p>
 <p>To revoke a stored access policy you can delete it, rename it by changing the signed identifier, or change the expiry time to a value in the past. Changing the signed identifier breaks the associations between any existing signatures and the stored access policy. Changing the expiry time to a value in the past causes any associated signatures to expire. Deleting or modifying the stored access policy immediately affects all of the SAS associated with it.</p>
