@@ -76,7 +76,6 @@
 <ul>
 <li><a href="#explore-the-microsoft-identity-platform">Explore the Microsoft identity platform</a></li>
 <li><a href="#implement-authentication-by-using-the-microsoft-authentication-library">Implement authentication by using the Microsoft Authentication Library</a></li>
-<li><a href="#creating-a-stored-access-policy">Creating a stored access policy</a></li>
 <li><a href="#modifying-or-revoking-a-stored-access-policy">Modifying or revoking a stored access policy</a></li>
 <li><a href="#explore-microsoft-graph---training--microsoft-docs.md">Explore Microsoft Graph - Training  Microsoft Docs.md</a></li>
 <li><a href="#learning-objectives">Learning objectives</a></li>
@@ -3029,8 +3028,8 @@ IConfidentialClientApplication app = ConfidentialClientApplicationBuilder.Create
 <p>When you copy a blob to a file, or a file to a blob, you must use a SAS to authorize access to the source object, even if the source and destination objects reside within the same storage account.</p>
 </li>
 </ul>
-<h4 id="explore-stored-access-policies">Explore stored access policies</h4>
-<p>A stored access policy provides an additional level of control over service-level shared access signatures (SAS) on the server side. Establishing a stored access policy groups shared access signatures and provides additional restrictions for signatures that are bound by the policy. You can use a stored access policy to change the start time, expiry time, or permissions for a signature, or to revoke it after it has been issued.</p>
+<h3 id="explore-stored-access-policies">Explore stored access policies</h3>
+<p>A stored access policy provides an additional level of control over service-level shared access signatures (SAS) on the server side. Establishing a stored access policy groups shared access signatures and provides additional restrictions for signatures that are bound by the policy.</p>
 <p>The following storage resources support stored access policies:</p>
 <ul>
 <li>Blob containers</li>
@@ -3038,11 +3037,9 @@ IConfidentialClientApplication app = ConfidentialClientApplicationBuilder.Create
 <li>Queues</li>
 <li>Tables</li>
 </ul>
-<h2 id="creating-a-stored-access-policy">Creating a stored access policy</h2>
+<h4 id="creating-a-stored-access-policy">Creating a stored access policy</h4>
 <p>The access policy for a SAS consists of the start time, expiry time, and permissions for the signature. You can specify all of these parameters on the signature URI and none within the stored access policy; all on the stored access policy and none on the URI; or some combination of the two. However, you cannot specify a given parameter on both the SAS token and the stored access policy.</p>
-<p>To create or modify a stored access policy, call the <code>Set ACL</code> operation for the resource (see <a href="https://docs.microsoft.com/en-us/rest/api/storageservices/set-container-acl">Set Container ACL</a>, <a href="https://docs.microsoft.com/en-us/rest/api/storageservices/set-queue-acl">Set Queue ACL</a>, <a href="https://docs.microsoft.com/en-us/rest/api/storageservices/set-table-acl">Set Table ACL</a>, or <a href="https://docs.microsoft.com/en-us/rest/api/storageservices/set-share-acl">Set Share ACL</a>) with a request body that specifies the terms of the access policy. The body of the request includes a unique signed identifier of your choosing, up to 64 characters in length, and the optional parameters of the access policy, as follows:</p>
-<p>Note</p>
-<p>When you establish a stored access policy on a container, table, queue, or share, it may take up to 30 seconds to take effect. During this time requests against a SAS associated with the stored access policy may fail with status code 403 (Forbidden), until the access policy becomes active. Table entity range restrictions (<code>startpk</code>, <code>startrk</code>, <code>endpk</code>, and <code>endrk</code>) cannot be specified in a stored access policy.</p>
+<p>To create or modify a stored access policy, call the <code>Set ACL</code> operation for the resource with a request body that specifies the terms of the access policy. The body of the request includes a unique signed identifier of your choosing, up to 64 characters in length, and the optional parameters of the access policy.</p>
 <p>Below are examples of creating a stored access policy by using C# .NET and the Azure CLI.</p>
 <pre><code>BlobSignedIdentifier identifier = new BlobSignedIdentifier
 {
