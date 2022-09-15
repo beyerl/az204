@@ -76,15 +76,7 @@
 <ul>
 <li><a href="#explore-the-microsoft-identity-platform">Explore the Microsoft identity platform</a></li>
 <li><a href="#implement-authentication-by-using-the-microsoft-authentication-library">Implement authentication by using the Microsoft Authentication Library</a></li>
-<li><a href="#modifying-or-revoking-a-stored-access-policy">Modifying or revoking a stored access policy</a></li>
-<li><a href="#explore-microsoft-graph---training--microsoft-docs.md">Explore Microsoft Graph - Training  Microsoft Docs.md</a></li>
-<li><a href="#learning-objectives">Learning objectives</a></li>
-<li><a href="#prerequisites">Prerequisites</a></li>
-<li><a href="#introduction---training--microsoft-docs3.md">Introduction - Training  Microsoft Docs(3).md</a></li>
-<li><a href="#next-unit-discover-microsoft-graph">Next unit: Discover Microsoft Graph</a></li>
-<li><a href="#discover-microsoft-graph---training--microsoft-docs.md">Discover Microsoft Graph - Training  Microsoft Docs.md</a></li>
-<li><a href="#next-unit-query-microsoft-graph-by-using-rest">Next unit: Query Microsoft Graph by using REST</a></li>
-<li><a href="#query-microsoft-graph-by-using-rest---training--microsoft-docs.md">Query Microsoft Graph by using REST - Training  Microsoft Docs.md</a></li>
+<li><a href="#explore-microsoft-graph">Explore Microsoft Graph</a></li>
 <li><a href="#call-a-rest-api-method">Call a REST API method</a></li>
 <li><a href="#http-methods">HTTP methods</a></li>
 <li><a href="#version">Version</a></li>
@@ -106,10 +98,10 @@
 <li><a href="#handle-responses-effectively">Handle responses effectively</a></li>
 <li><a href="#storing-data-locally">Storing data locally</a></li>
 <li><a href="#az-204-implement-secure-cloud-solutions---training--microsoft-docs.md">AZ-204 Implement secure cloud solutions - Training  Microsoft Docs.md</a></li>
-<li><a href="#prerequisites-1">Prerequisites</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
 <li><a href="#implement-azure-key-vault---training--microsoft-docs.md">Implement Azure Key Vault - Training  Microsoft Docs.md</a></li>
-<li><a href="#learning-objectives-1">Learning objectives</a></li>
-<li><a href="#prerequisites-2">Prerequisites</a></li>
+<li><a href="#learning-objectives">Learning objectives</a></li>
+<li><a href="#prerequisites-1">Prerequisites</a></li>
 <li><a href="#introduction---training--microsoft-docs4.md">Introduction - Training  Microsoft Docs(4).md</a></li>
 <li><a href="#next-unit-explore-azure-key-vault">Next unit: Explore Azure Key Vault</a></li>
 <li><a href="#explore-azure-key-vault---training--microsoft-docs.md">Explore Azure Key Vault - Training  Microsoft Docs.md</a></li>
@@ -126,14 +118,14 @@
 <li><a href="#additional-resources-2">Additional resources</a></li>
 <li><a href="#next-unit-exercise-set-and-retrieve-a-secret-from-azure-key-vault-by-using-azure-cli">Next unit: Exercise: Set and retrieve a secret from Azure Key Vault by using Azure CLI</a></li>
 <li><a href="#exercise-set-and-retrieve-a-secret-from-azure-key-vault-by-using-azure-cli---training--microsoft-docs.md">Exercise Set and retrieve a secret from Azure Key Vault by using Azure CLI - Training  Microsoft Docs.md</a></li>
-<li><a href="#prerequisites-3">Prerequisites</a></li>
+<li><a href="#prerequisites-2">Prerequisites</a></li>
 <li><a href="#log-in-to-azure-and-start-the-cloud-shell">Log in to Azure and start the Cloud Shell</a></li>
 <li><a href="#create-a-key-vault">Create a Key Vault</a></li>
 <li><a href="#add-and-retrieve-a-secret">Add and retrieve a secret</a></li>
 <li><a href="#clean-up-resources">Clean up resources</a></li>
 <li><a href="#implement-managed-identities---training--microsoft-docs.md">Implement managed identities - Training  Microsoft Docs.md</a></li>
-<li><a href="#learning-objectives-2">Learning objectives</a></li>
-<li><a href="#prerequisites-4">Prerequisites</a></li>
+<li><a href="#learning-objectives-1">Learning objectives</a></li>
+<li><a href="#prerequisites-3">Prerequisites</a></li>
 <li><a href="#introduction---training--microsoft-docs5.md">Introduction - Training  Microsoft Docs(5).md</a></li>
 <li><a href="#next-unit-explore-managed-identities">Next unit: Explore managed identities</a></li>
 <li><a href="#explore-managed-identities---training--microsoft-docs.md">Explore managed identities - Training  Microsoft Docs.md</a></li>
@@ -3062,55 +3054,12 @@ blobContainer.SetAccessPolicy(permissions: new BlobSignedIdentifier[] { identifi
     --account-key &lt;storage account key&gt; \
     --account-name &lt;storage account name&gt; \
 </code></pre>
-<p><strong>hier weiter</strong></p>
-<h2 id="modifying-or-revoking-a-stored-access-policy">Modifying or revoking a stored access policy</h2>
-<p>To modify the parameters of the stored access policy you can call the access control list operation for the resource type to replace the existing policy. For example, if your existing policy grants read and write permissions to a resource, you can modify it to grant only read permissions for all future requests.</p>
-<p>To revoke a stored access policy you can delete it, rename it by changing the signed identifier, or change the expiry time to a value in the past. Changing the signed identifier breaks the associations between any existing signatures and the stored access policy. Changing the expiry time to a value in the past causes any associated signatures to expire. Deleting or modifying the stored access policy immediately affects all of the SAS associated with it.</p>
+<h4 id="modifying-or-revoking-a-stored-access-policy">Modifying or revoking a stored access policy</h4>
+<p>To modify the parameters of the stored access policy you can call the access control list operation for the resource type to replace the existing policy.</p>
+<p>To revoke a stored access policy you can delete it, rename it by changing the signed identifier, or change the expiry time to a value in the past.</p>
 <p>To remove a single access policy, call the resource’s <code>Set ACL</code> operation, passing in the set of signed identifiers that you wish to maintain on the container. To remove all access policies from the resource, call the <code>Set ACL</code> operation with an empty request body.</p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-shared-access-signatures.explore-stored-access-policies&amp;documentId=4c4849ff-c3b5-8c67-a582-3b9a043f7a29&amp;versionIndependentDocumentId=22349c0c-9a5c-d20f-7605-d07c02dbd41b&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-shared-access-signatures%2F4-stored-access-policies.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-shared-access-signatures%2F4-stored-access-policies&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-shared-access-signatures.explore-stored-access-policies&amp;documentId=4c4849ff-c3b5-8c67-a582-3b9a043f7a29&amp;versionIndependentDocumentId=22349c0c-9a5c-d20f-7605-d07c02dbd41b&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-shared-access-signatures%2F4-stored-access-policies.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-shared-access-signatures%2F4-stored-access-policies&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
-<h2 id="explore-microsoft-graph---training--microsoft-docs.md">Explore Microsoft Graph - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<p><img src="https://docs.microsoft.com/en-us/learn/achievements/microsoft-graph-explore.svg" alt=""></p>
-<ul>
-<li>Module</li>
-<li>7 Units</li>
-</ul>
-<p>Intermediate</p>
-<p>Developer</p>
-<p>SDKs</p>
-<p>Microsoft Graph</p>
-<p>Learn how Microsoft Graph facilitates the access and flow of data and how to form queries through REST and code.</p>
-<h2 id="learning-objectives">Learning objectives</h2>
-<p>After completing this module, you’ll be able to:</p>
-<ul>
-<li>Explain the benefits of using Microsoft Graph.</li>
-<li>Perform operations on Microsoft Graph by using REST and SDKs.</li>
-<li>Apply best practices to help your applications get the most out of Microsoft Graph.</li>
-</ul>
-<h2 id="prerequisites">Prerequisites</h2>
-<ul>
-<li>You should be familiar with developer concepts and terminology.</li>
-<li>Experience working with OAuth.</li>
-<li>An understanding of cloud computing and some experience with the Azure portal.</li>
-</ul>
-<h2 id="introduction---training--microsoft-docs3.md">Introduction - Training  Microsoft Docs(3).md</h2>
-<ul>
-<li>3 minutes</li>
-</ul>
-<p>Use the wealth of data in Microsoft Graph to build apps for organizations and consumers that interact with millions of users.</p>
-<p>After completing this module, you’ll be able to:</p>
-<ul>
-<li>Explain the benefits of using Microsoft Graph</li>
-<li>Perform operations on Microsoft Graph by using REST and SDKs</li>
-<li>Apply best practices to help your applications get the most out of Microsoft Graph</li>
-</ul>
-<hr>
-<h2 id="next-unit-discover-microsoft-graph">Next unit: Discover Microsoft Graph</h2>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/microsoft-graph/2-microsoft-graph-overview/">Continue</a></p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.microsoft-graph.introduction&amp;documentId=24554610-ef43-fa24-3da2-5bc111ff6d61&amp;versionIndependentDocumentId=3e87e6ee-e94e-9af9-cc27-b96919e97c2a&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fmicrosoft-graph%2F1-introduction.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fmicrosoft-graph%2F1-introduction&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.microsoft-graph.introduction&amp;documentId=24554610-ef43-fa24-3da2-5bc111ff6d61&amp;versionIndependentDocumentId=3e87e6ee-e94e-9af9-cc27-b96919e97c2a&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fmicrosoft-graph%2F1-introduction.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fmicrosoft-graph%2F1-introduction&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
-<h2 id="discover-microsoft-graph---training--microsoft-docs.md">Discover Microsoft Graph - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<ul>
-<li>3 minutes</li>
-</ul>
+<h2 id="explore-microsoft-graph">Explore Microsoft Graph</h2>
+<h3 id="discover-microsoft-graph">Discover Microsoft Graph</h3>
 <p>Microsoft Graph is the gateway to data and intelligence in Microsoft 365. It provides a unified programmability model that you can use to access the tremendous amount of data in Microsoft 365, Windows 10, and Enterprise Mobility + Security.</p>
 <p><img src="https://docs.microsoft.com/en-us/training/wwl-azure/microsoft-graph/media/microsoft-graph-data-connectors.png" alt="Microsoft Graph, Microsoft Graph data connect, and Microsoft Graph connectors enable extending Microsoft 365 experiences and building intelligent apps."></p>
 <p>In the Microsoft 365 platform, three main components facilitate the access and flow of data:</p>
@@ -3119,20 +3068,14 @@ blobContainer.SetAccessPolicy(permissions: new BlobSignedIdentifier[] { identifi
 <p>The Microsoft Graph API offers a single endpoint, <code>https://graph.microsoft.com</code>. You can use REST APIs or SDKs to access the endpoint. Microsoft Graph also includes a powerful set of services that manage user and device identity, access, compliance, security, and help protect organizations from data leakage or loss.</p>
 </li>
 <li>
-<p><a href="https://docs.microsoft.com/en-us/microsoftsearch/connectors-overview">Microsoft Graph connectors</a> work in the incoming direction, <strong>delivering data external to the Microsoft cloud into Microsoft Graph services and applications</strong>, to enhance Microsoft 365 experiences such as Microsoft Search. Connectors exist for many commonly used data sources such as Box, Google Drive, Jira, and Salesforce.</p>
+<p>Microsoft Graph connectors work in the incoming direction, <strong>delivering data external to the Microsoft cloud into Microsoft Graph services and applications</strong>, to enhance Microsoft 365 experiences such as Microsoft Search.</p>
 </li>
 <li>
-<p><a href="https://docs.microsoft.com/en-us/graph/overview">Microsoft Graph Data Connect</a> provides a set of tools to streamline secure and scalable <strong>delivery of Microsoft Graph data to popular Azure data stores</strong>. The cached data serves as data sources for Azure development tools that you can use to build intelligent applications.</p>
+<p>Microsoft Graph Data Connect provides a set of tools to streamline secure and scalable <strong>delivery of Microsoft Graph data to popular Azure data stores</strong>. The cached data serves as data sources for Azure development tools that you can use to build intelligent applications.</p>
 </li>
 </ul>
-<hr>
-<h2 id="next-unit-query-microsoft-graph-by-using-rest">Next unit: Query Microsoft Graph by using REST</h2>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/microsoft-graph/3-microsoft-graph-api/">Continue</a></p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.microsoft-graph.discover&amp;documentId=85cf0514-d363-ee32-cdb7-d1f341b0e04a&amp;versionIndependentDocumentId=abe213c2-99c1-c5a4-6383-130ddfae84b8&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fmicrosoft-graph%2F2-microsoft-graph-overview.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fmicrosoft-graph%2F2-microsoft-graph-overview&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.microsoft-graph.discover&amp;documentId=85cf0514-d363-ee32-cdb7-d1f341b0e04a&amp;versionIndependentDocumentId=abe213c2-99c1-c5a4-6383-130ddfae84b8&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fmicrosoft-graph%2F2-microsoft-graph-overview.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fmicrosoft-graph%2F2-microsoft-graph-overview&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
-<h2 id="query-microsoft-graph-by-using-rest---training--microsoft-docs.md">Query Microsoft Graph by using REST - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<ul>
-<li>3 minutes</li>
-</ul>
+<p><strong>hier weiter</strong></p>
+<h3 id="query-microsoft-graph-by-using-rest">Query Microsoft Graph by using REST</h3>
 <p>Microsoft Graph is a RESTful web API that enables you to access Microsoft Cloud service resources. After you register your app and get authentication tokens for a user or service, you can make requests to the Microsoft Graph API.</p>
 <p>The Microsoft Graph API defines most of its resources, methods, and enumerations in the OData namespace, <code>microsoft.graph</code>, in the <a href="https://docs.microsoft.com/en-us/graph/traverse-the-graph">Microsoft Graph metadata</a>. A small number of API sets are defined in their sub-namespaces, such as the <a href="https://docs.microsoft.com/en-us/graph/api/resources/callrecords-api-overview">call records API</a> which defines resources like <a href="https://docs.microsoft.com/en-us/graph/api/resources/callrecords-callrecord">callRecord</a> in <code>microsoft.graph.callRecords</code>.</p>
 <p>Unless explicitly specified in the corresponding topic, assume types, methods, and enumerations are part of the <code>microsoft.graph</code> namespace.</p>
@@ -3360,7 +3303,7 @@ var newCalendar = await graphClient.Me.Calendars
 <li>3 Modules</li>
 </ul>
 <p>Learn how to more securely deploy apps in Azure by using Azure Key Vault, managed identities, and Azure App Configuration.</p>
-<h2 id="prerequisites-1">Prerequisites</h2>
+<h2 id="prerequisites">Prerequisites</h2>
 <ul>
 <li>At least one year of experience developing scalable solutions through all phases of software development.</li>
 <li>Have a base understanding of Azure and cloud concepts, services, and the Azure portal.</li>
@@ -3390,14 +3333,14 @@ var newCalendar = await graphClient.Me.Calendars
 <p>Developer</p>
 <p>Key Vault</p>
 <p>Learn how Azure Key Vault can help you keep your apps more secure, and how to set and retrieve secrets by using the Azure CLI.</p>
-<h2 id="learning-objectives-1">Learning objectives</h2>
+<h2 id="learning-objectives">Learning objectives</h2>
 <p>After completing this module, you’ll be able to:</p>
 <ul>
 <li>Describe the benefits of using Azure Key Vault</li>
 <li>Explain how to authenticate to Azure Key Vault</li>
 <li>Set and retrieve a secret from Azure Key Vault by using the Azure CLI</li>
 </ul>
-<h2 id="prerequisites-2">Prerequisites</h2>
+<h2 id="prerequisites-1">Prerequisites</h2>
 <ul>
 <li>You should be experienced with developer concepts and terminology.</li>
 <li>An understanding of cloud computing and some experience with the Azure portal.</li>
@@ -3564,7 +3507,7 @@ WWW-Authenticate: Bearer authorization="…", resource="…"
 <li>Create a Key Vault</li>
 <li>Add and retrieve a secret</li>
 </ul>
-<h2 id="prerequisites-3">Prerequisites</h2>
+<h2 id="prerequisites-2">Prerequisites</h2>
 <ul>
 <li>
 <ul>
@@ -3650,7 +3593,7 @@ myLocation=&lt;myLocation&gt;
 <p>Developer</p>
 <p>Azure</p>
 <p>Learn how managed identities can help you deploy secure solutions on Azure without the need to manage credentials.</p>
-<h2 id="learning-objectives-2">Learning objectives</h2>
+<h2 id="learning-objectives-1">Learning objectives</h2>
 <p>After completing this module, you’ll be able to:</p>
 <ul>
 <li>Explain the differences between the two types of managed identities</li>
@@ -3658,7 +3601,7 @@ myLocation=&lt;myLocation&gt;
 <li>Configure managed identities</li>
 <li>Acquire access tokens by using REST and code</li>
 </ul>
-<h2 id="prerequisites-4">Prerequisites</h2>
+<h2 id="prerequisites-3">Prerequisites</h2>
 <ul>
 <li>You should be experienced with developer concepts and terminology.</li>
 <li>An understanding of cloud computing and some experience with the Azure portal.</li>
