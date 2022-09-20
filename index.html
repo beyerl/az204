@@ -77,22 +77,6 @@
 <li><a href="#explore-the-microsoft-identity-platform">Explore the Microsoft identity platform</a></li>
 <li><a href="#implement-authentication-by-using-the-microsoft-authentication-library">Implement authentication by using the Microsoft Authentication Library</a></li>
 <li><a href="#explore-microsoft-graph">Explore Microsoft Graph</a></li>
-<li><a href="#call-a-rest-api-method">Call a REST API method</a></li>
-<li><a href="#http-methods">HTTP methods</a></li>
-<li><a href="#version">Version</a></li>
-<li><a href="#resource">Resource</a></li>
-<li><a href="#query-parameters">Query parameters</a></li>
-<li><a href="#additional-resources">Additional resources</a></li>
-<li><a href="#next-unit-query-microsoft-graph-by-using-sdks">Next unit: Query Microsoft Graph by using SDKs</a></li>
-<li><a href="#query-microsoft-graph-by-using-sdks---training--microsoft-docs.md">Query Microsoft Graph by using SDKs - Training  Microsoft Docs.md</a></li>
-<li><a href="#install-the-microsoft-graph-.net-sdk">Install the Microsoft Graph .NET SDK</a></li>
-<li><a href="#create-a-microsoft-graph-client">Create a Microsoft Graph client</a></li>
-<li><a href="#read-information-from-microsoft-graph">Read information from Microsoft Graph</a></li>
-<li><a href="#retrieve-a-list-of-entities">Retrieve a list of entities</a></li>
-<li><a href="#delete-an-entity">Delete an entity</a></li>
-<li><a href="#create-a-new-entity">Create a new entity</a></li>
-<li><a href="#additional-resources-1">Additional resources</a></li>
-<li><a href="#next-unit-apply-best-practices-to-microsoft-graph">Next unit: Apply best practices to Microsoft Graph</a></li>
 <li><a href="#apply-best-practices-to-microsoft-graph---training--microsoft-docs.md">Apply best practices to Microsoft Graph - Training  Microsoft Docs.md</a></li>
 <li><a href="#authentication">Authentication</a></li>
 <li><a href="#handle-responses-effectively">Handle responses effectively</a></li>
@@ -115,7 +99,7 @@
 <li><a href="#authenticate-to-azure-key-vault---training--microsoft-docs.md">Authenticate to Azure Key Vault - Training  Microsoft Docs.md</a></li>
 <li><a href="#authentication-to-key-vault-in-application-code">Authentication to Key Vault in application code</a></li>
 <li><a href="#authentication-to-key-vault-with-rest">Authentication to Key Vault with REST</a></li>
-<li><a href="#additional-resources-2">Additional resources</a></li>
+<li><a href="#additional-resources">Additional resources</a></li>
 <li><a href="#next-unit-exercise-set-and-retrieve-a-secret-from-azure-key-vault-by-using-azure-cli">Next unit: Exercise: Set and retrieve a secret from Azure Key Vault by using Azure CLI</a></li>
 <li><a href="#exercise-set-and-retrieve-a-secret-from-azure-key-vault-by-using-azure-cli---training--microsoft-docs.md">Exercise Set and retrieve a secret from Azure Key Vault by using Azure CLI - Training  Microsoft Docs.md</a></li>
 <li><a href="#prerequisites-2">Prerequisites</a></li>
@@ -3074,12 +3058,10 @@ blobContainer.SetAccessPolicy(permissions: new BlobSignedIdentifier[] { identifi
 <p>Microsoft Graph Data Connect provides a set of tools to streamline secure and scalable <strong>delivery of Microsoft Graph data to popular Azure data stores</strong>. The cached data serves as data sources for Azure development tools that you can use to build intelligent applications.</p>
 </li>
 </ul>
-<p><strong>hier weiter</strong></p>
 <h3 id="query-microsoft-graph-by-using-rest">Query Microsoft Graph by using REST</h3>
 <p>Microsoft Graph is a RESTful web API that enables you to access Microsoft Cloud service resources. After you register your app and get authentication tokens for a user or service, you can make requests to the Microsoft Graph API.</p>
-<p>The Microsoft Graph API defines most of its resources, methods, and enumerations in the OData namespace, <code>microsoft.graph</code>, in the <a href="https://docs.microsoft.com/en-us/graph/traverse-the-graph">Microsoft Graph metadata</a>. A small number of API sets are defined in their sub-namespaces, such as the <a href="https://docs.microsoft.com/en-us/graph/api/resources/callrecords-api-overview">call records API</a> which defines resources like <a href="https://docs.microsoft.com/en-us/graph/api/resources/callrecords-callrecord">callRecord</a> in <code>microsoft.graph.callRecords</code>.</p>
-<p>Unless explicitly specified in the corresponding topic, assume types, methods, and enumerations are part of the <code>microsoft.graph</code> namespace.</p>
-<h2 id="call-a-rest-api-method">Call a REST API method</h2>
+<p>The Microsoft Graph API defines most of its resources, methods, and enumerations in the OData namespace, <code>microsoft.graph</code>, in the Microsoft Graph metadata. A small number of API sets are defined in their sub-namespaces, such as the call records APIwhich defines resources like callRecord in <code>microsoft.graph.callRecords</code>.</p>
+<h4 id="call-a-rest-api-method">Call a REST API method</h4>
 <p>To read from or write to a resource such as a user or an email message, you construct a request that looks like the following:</p>
 <pre><code>{HTTP method} https://graph.microsoft.com/{version}/{resource}?{query-parameters}
 </code></pre>
@@ -3093,10 +3075,10 @@ blobContainer.SetAccessPolicy(permissions: new BlobSignedIdentifier[] { identifi
 <p>After you make a request, a response is returned that includes:</p>
 <ul>
 <li>Status code - An HTTP status code that indicates success or failure.</li>
-<li>Response message - The data that you requested or the result of the operation. The response message can be empty for some operations.</li>
+<li>Response message - The data that you requested or the result of the operation.</li>
 <li><code>nextLink</code> - If your request returns a lot of data, you need to page through it by using the URL returned in <code>@odata.nextLink</code>.</li>
 </ul>
-<h2 id="http-methods">HTTP methods</h2>
+<h4 id="http-methods">HTTP methods</h4>
 <p>Microsoft Graph uses the HTTP method on your request to determine what your request is doing. The API supports the following methods.</p>
 
 <table>
@@ -3132,50 +3114,40 @@ blobContainer.SetAccessPolicy(permissions: new BlobSignedIdentifier[] { identifi
 <li>For the CRUD methods <code>GET</code> and <code>DELETE</code>, no request body is required.</li>
 <li>The <code>POST</code>, <code>PATCH</code>, and <code>PUT</code> methods require a request body, usually specified in JSON format, that contains additional information, such as the values for properties of the resource.</li>
 </ul>
-<h2 id="version">Version</h2>
+<h4 id="version">Version</h4>
 <p>Microsoft Graph currently supports two versions: <code>v1.0</code> and <code>beta</code>.</p>
 <ul>
-<li><code>v1.0</code> includes generally available APIs. Use the v1.0 version for all production apps.</li>
-<li><code>beta</code> includes APIs that are currently in preview. Because we might introduce breaking changes to our beta APIs, we recommend that you use the beta version only to test apps that are in development; do not use beta APIs in your production apps.</li>
+<li><code>v1.0</code> includes generally available APIs.</li>
+<li><code>beta</code> includes APIs that are currently in preview.</li>
 </ul>
-<h2 id="resource">Resource</h2>
+<h4 id="resource">Resource</h4>
 <p>A resource can be an entity or complex type, commonly defined with properties. Entities differ from complex types by always including an <strong>id</strong> property.</p>
 <p>Your URL will include the resource you are interacting with in the request, such as <code>me</code>, <strong>user</strong>, <strong>group</strong>, <strong>drive</strong>, and <strong>site</strong>. Often, top-level resources also include <em>relationships</em>, which you can use to access additional resources, like <code>me/messages</code> or <code>me/drive</code>. You can also interact with resources using <em>methods</em>; for example, to send an email, use <code>me/sendMail</code>.</p>
 <p>Each resource might require different permissions to access it. You will often need a higher level of permissions to create or update a resource than to read it. For details about required permissions, see the method reference topic.</p>
-<h2 id="query-parameters">Query parameters</h2>
+<h4 id="query-parameters">Query parameters</h4>
 <p>Query parameters can be OData system query options, or other strings that a method accepts to customize its response.</p>
-<p>You can use optional OData system query options to include more or fewer properties than the default response, filter the response for items that match a custom query, or provide additional parameters for a method.</p>
-<p>For example, adding the following <code>filter</code> parameter restricts the messages returned to only those with the <code>emailAddress</code> property of <code>jon@contoso.com</code>.</p>
 <pre><code>GET https://graph.microsoft.com/v1.0/me/messages?filter=emailAddress eq 'jon@contoso.com'
 </code></pre>
-<h2 id="additional-resources">Additional resources</h2>
-<p>Below are links to some tools you can use to build and test requests using Microsoft Graph APIs.</p>
-<ul>
-<li><a href="https://developer.microsoft.com/graph/graph-explorer">Graph Explorer</a></li>
-<li><a href="https://www.getpostman.com/">Postman</a></li>
-</ul>
-<hr>
-<h2 id="next-unit-query-microsoft-graph-by-using-sdks">Next unit: Query Microsoft Graph by using SDKs</h2>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/microsoft-graph/4-microsoft-graph-sdk/">Continue</a></p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.microsoft-graph.query-by-using-rest&amp;documentId=57322caf-8582-e6bc-da3d-084a49eab122&amp;versionIndependentDocumentId=cfdb55ba-d12b-b8f3-faf9-55b5b407c2be&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fmicrosoft-graph%2F3-microsoft-graph-api.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fmicrosoft-graph%2F3-microsoft-graph-api&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.microsoft-graph.query-by-using-rest&amp;documentId=57322caf-8582-e6bc-da3d-084a49eab122&amp;versionIndependentDocumentId=cfdb55ba-d12b-b8f3-faf9-55b5b407c2be&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fmicrosoft-graph%2F3-microsoft-graph-api.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fmicrosoft-graph%2F3-microsoft-graph-api&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
-<h2 id="query-microsoft-graph-by-using-sdks---training--microsoft-docs.md">Query Microsoft Graph by using SDKs - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<ul>
-<li>3 minutes</li>
-</ul>
+<h3 id="query-microsoft-graph-by-using-sdks">Query Microsoft Graph by using SDKs</h3>
 <p>The Microsoft Graph SDKs are designed to simplify building high-quality, efficient, and resilient applications that access Microsoft Graph. The SDKs include two components: a service library and a core library.</p>
+<ul>
+<li>
 <p>The service library contains models and request builders that are generated from Microsoft Graph metadata to provide a rich, strongly typed, and discoverable experience when working with the many datasets available in Microsoft Graph.</p>
-<p>The core library provides a set of features that enhance working with all the Microsoft Graph services. Embedded support for retry handling, secure redirects, transparent authentication, and payload compression, improve the quality of your application’s interactions with Microsoft Graph, with no added complexity, while leaving you completely in control. The core library also provides support for common tasks such as paging through collections and creating batch requests.</p>
-<p>In this unit you will learn about the available SDKs and see some code examples of some of the most common operations.</p>
-<h2 id="install-the-microsoft-graph-.net-sdk">Install the Microsoft Graph .NET SDK</h2>
+</li>
+<li>
+<p>The core library provides a set of features that enhance working with all the Microsoft Graph services.</p>
+</li>
+</ul>
+<h4 id="install-the-microsoft-graph-.net-sdk">Install the Microsoft Graph .NET SDK</h4>
 <p>The Microsoft Graph .NET SDK is included in the following NuGet packages:</p>
 <ul>
-<li><a href="https://github.com/microsoftgraph/msgraph-sdk-dotnet">Microsoft.Graph</a> - Contains the models and request builders for accessing the <code>v1.0</code> endpoint with the fluent API. Microsoft.Graph has a dependency on Microsoft.Graph.Core.</li>
-<li><a href="https://github.com/microsoftgraph/msgraph-beta-sdk-dotnet">Microsoft.Graph.Beta</a> - Contains the models and request builders for accessing the <code>beta</code> endpoint with the fluent API. Microsoft.Graph.Beta has a dependency on Microsoft.Graph.Core.</li>
+<li><a href="https://github.com/microsoftgraph/msgraph-sdk-dotnet">Microsoft.Graph</a> - Contains the models and request builders for accessing the <code>v1.0</code> endpoint with the fluent API.</li>
+<li><a href="https://github.com/microsoftgraph/msgraph-beta-sdk-dotnet">Microsoft.Graph.Beta</a> - Contains the models and request builders for accessing the <code>beta</code> endpoint with the fluent API.</li>
 <li><a href="https://github.com/microsoftgraph/msgraph-sdk-dotnet">Microsoft.Graph.Core</a> - The core library for making calls to Microsoft Graph.</li>
-<li><a href="https://github.com/microsoftgraph/msgraph-sdk-dotnet-auth">Microsoft.Graph.Auth</a> - Provides an authentication scenario-based wrapper of the Microsoft Authentication Library (MSAL) for use with the Microsoft Graph SDK. Microsoft.Graph.Auth has a dependency on Microsoft.Graph.Core.</li>
+<li><a href="https://github.com/microsoftgraph/msgraph-sdk-dotnet-auth">Microsoft.Graph.Auth</a> - Provides an authentication scenario-based wrapper of the Microsoft Authentication Library (MSAL) for use with the Microsoft Graph SDK.</li>
 </ul>
-<h2 id="create-a-microsoft-graph-client">Create a Microsoft Graph client</h2>
-<p>The Microsoft Graph client is designed to make it simple to make calls to Microsoft Graph. You can use a single client instance for the lifetime of the application. The following code examples show how to create an instance of a Microsoft Graph client. The authentication provider will handle acquiring access tokens for the application. The different application providers support different client scenarios. For details about which provider and options are appropriate for your scenario, see <a href="https://docs.microsoft.com/en-us/graph/sdks/choose-authentication-providers">Choose an Authentication Provider</a>.</p>
+<h4 id="create-a-microsoft-graph-client">Create a Microsoft Graph client</h4>
+<p>The Microsoft Graph client is designed to make it simple to make calls to Microsoft Graph. You can use a single client instance for the lifetime of the application. The following code examples show how to create an instance of a Microsoft Graph client. The authentication provider will handle acquiring access tokens for the application.</p>
 <pre><code>// Build a client application.
 IPublicClientApplication publicClientApplication = PublicClientApplicationBuilder
             .Create("INSERT-CLIENT-APP-ID")
@@ -3185,15 +3157,14 @@ DeviceCodeProvider authProvider = new DeviceCodeProvider(publicClientApplication
 // Create a new instance of GraphServiceClient with the authentication provider.
 GraphServiceClient graphClient = new GraphServiceClient(authProvider);
 </code></pre>
-<h2 id="read-information-from-microsoft-graph">Read information from Microsoft Graph</h2>
-<p>To read information from Microsoft Graph, you first need to create a request object and then run the <code>GET</code> method on the request.</p>
+<h4 id="read-information-from-microsoft-graph">Read information from Microsoft Graph</h4>
 <pre><code>// GET https://graph.microsoft.com/v1.0/me
 
 var user = await graphClient.Me
     .Request()
     .GetAsync();
 </code></pre>
-<h2 id="retrieve-a-list-of-entities">Retrieve a list of entities</h2>
+<h4 id="retrieve-a-list-of-entities">Retrieve a list of entities</h4>
 <p>Retrieving a list of entities is similar to retrieving a single entity except there a number of other options for configuring the request. The <code>$filter</code> query parameter can be used to reduce the result set to only those rows that match the provided condition. The <code>$orderBy</code> query parameter will request that the server provide the list of entities sorted by the specified properties.</p>
 <pre><code>// GET https://graph.microsoft.com/v1.0/me/messages?$select=subject,sender&amp;$filter=&lt;some condition&gt;&amp;orderBy=receivedDateTime
 
@@ -3207,8 +3178,7 @@ var messages = await graphClient.Me.Messages
     .OrderBy("receivedDateTime")
     .GetAsync();
 </code></pre>
-<h2 id="delete-an-entity">Delete an entity</h2>
-<p>Delete requests are constructed in the same way as requests to retrieve an entity, but use a <code>DELETE</code> request instead of a <code>GET</code>.</p>
+<h4 id="delete-an-entity">Delete an entity</h4>
 <pre><code>// DELETE https://graph.microsoft.com/v1.0/me/messages/{message-id}
 
 string messageId = "AQMkAGUy...";
@@ -3216,8 +3186,7 @@ var message = await graphClient.Me.Messages[messageId]
     .Request()
     .DeleteAsync();
 </code></pre>
-<h2 id="create-a-new-entity">Create a new entity</h2>
-<p>For SDKs that support a fluent style, new items can be added to collections with an <code>Add</code> method. For template-based SDKs, the request object exposes a <code>post</code> method.</p>
+<h4 id="create-a-new-entity">Create a new entity</h4>
 <pre><code>// POST https://graph.microsoft.com/v1.0/me/calendars
 
 var calendar = new Calendar
@@ -3229,14 +3198,7 @@ var newCalendar = await graphClient.Me.Calendars
     .Request()
     .AddAsync(calendar);
 </code></pre>
-<h2 id="additional-resources-1">Additional resources</h2>
-<ul>
-<li><a href="https://docs.microsoft.com/en-us/graph/api/overview">Microsoft Graph REST API v1.0 reference</a></li>
-</ul>
-<hr>
-<h2 id="next-unit-apply-best-practices-to-microsoft-graph">Next unit: Apply best practices to Microsoft Graph</h2>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/microsoft-graph/5-microsoft-graph-best-practices/">Continue</a></p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.microsoft-graph.query-by-using-sdks&amp;documentId=f11aead4-d6be-fe8b-16b1-bd5c481cee0b&amp;versionIndependentDocumentId=80df5428-a1be-e349-a79a-841a52e21dd7&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fmicrosoft-graph%2F4-microsoft-graph-sdk.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fmicrosoft-graph%2F4-microsoft-graph-sdk&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.microsoft-graph.query-by-using-sdks&amp;documentId=f11aead4-d6be-fe8b-16b1-bd5c481cee0b&amp;versionIndependentDocumentId=80df5428-a1be-e349-a79a-841a52e21dd7&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fmicrosoft-graph%2F4-microsoft-graph-sdk.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fmicrosoft-graph%2F4-microsoft-graph-sdk&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
+<p><strong>hier weiter</strong></p>
 <h2 id="apply-best-practices-to-microsoft-graph---training--microsoft-docs.md">Apply best practices to Microsoft Graph - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
 <ul>
 <li>3 minutes</li>
@@ -3489,7 +3451,7 @@ WWW-Authenticate: Bearer authorization="…", resource="…"
 <p>resource: The name of the resource (<code>https://vault.azure.net</code>) to use in the authorization request.</p>
 </li>
 </ul>
-<h2 id="additional-resources-2">Additional resources</h2>
+<h2 id="additional-resources">Additional resources</h2>
 <ul>
 <li><a href="https://docs.microsoft.com/en-us/azure/key-vault/general/developers-guide">Azure Key Vault developer’s guide</a></li>
 <li><a href="https://docs.microsoft.com/en-us/azure/key-vault/general/disaster-recovery-guidance">Azure Key Vault availability and redundancy</a></li>
