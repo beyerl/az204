@@ -77,39 +77,21 @@
 <li><a href="#explore-the-microsoft-identity-platform">Explore the Microsoft identity platform</a></li>
 <li><a href="#implement-authentication-by-using-the-microsoft-authentication-library">Implement authentication by using the Microsoft Authentication Library</a></li>
 <li><a href="#explore-microsoft-graph">Explore Microsoft Graph</a></li>
-<li><a href="#apply-best-practices-to-microsoft-graph---training--microsoft-docs.md">Apply best practices to Microsoft Graph - Training  Microsoft Docs.md</a></li>
-<li><a href="#authentication">Authentication</a></li>
-<li><a href="#handle-responses-effectively">Handle responses effectively</a></li>
-<li><a href="#storing-data-locally">Storing data locally</a></li>
-<li><a href="#az-204-implement-secure-cloud-solutions---training--microsoft-docs.md">AZ-204 Implement secure cloud solutions - Training  Microsoft Docs.md</a></li>
-<li><a href="#prerequisites">Prerequisites</a></li>
-<li><a href="#implement-azure-key-vault---training--microsoft-docs.md">Implement Azure Key Vault - Training  Microsoft Docs.md</a></li>
-<li><a href="#learning-objectives">Learning objectives</a></li>
-<li><a href="#prerequisites-1">Prerequisites</a></li>
-<li><a href="#introduction---training--microsoft-docs4.md">Introduction - Training  Microsoft Docs(4).md</a></li>
-<li><a href="#next-unit-explore-azure-key-vault">Next unit: Explore Azure Key Vault</a></li>
-<li><a href="#explore-azure-key-vault---training--microsoft-docs.md">Explore Azure Key Vault - Training  Microsoft Docs.md</a></li>
-<li><a href="#key-benefits-of-using-azure-key-vault">Key benefits of using Azure Key Vault</a></li>
-<li><a href="#next-unit-discover-azure-key-vault-best-practices">Next unit: Discover Azure Key Vault best practices</a></li>
-<li><a href="#discover-azure-key-vault-best-practices---training--microsoft-docs.md">Discover Azure Key Vault best practices - Training  Microsoft Docs.md</a></li>
-<li><a href="#authentication-1">Authentication</a></li>
-<li><a href="#encryption-of-data-in-transit">Encryption of data in transit</a></li>
-<li><a href="#azure-key-vault-best-practices">Azure Key Vault best practices</a></li>
-<li><a href="#next-unit-authenticate-to-azure-key-vault">Next unit: Authenticate to Azure Key Vault</a></li>
+<li><a href="#az-204-implement-secure-cloud-solutions">AZ-204 Implement secure cloud solutions</a></li>
 <li><a href="#authenticate-to-azure-key-vault---training--microsoft-docs.md">Authenticate to Azure Key Vault - Training  Microsoft Docs.md</a></li>
 <li><a href="#authentication-to-key-vault-in-application-code">Authentication to Key Vault in application code</a></li>
 <li><a href="#authentication-to-key-vault-with-rest">Authentication to Key Vault with REST</a></li>
 <li><a href="#additional-resources">Additional resources</a></li>
 <li><a href="#next-unit-exercise-set-and-retrieve-a-secret-from-azure-key-vault-by-using-azure-cli">Next unit: Exercise: Set and retrieve a secret from Azure Key Vault by using Azure CLI</a></li>
 <li><a href="#exercise-set-and-retrieve-a-secret-from-azure-key-vault-by-using-azure-cli---training--microsoft-docs.md">Exercise Set and retrieve a secret from Azure Key Vault by using Azure CLI - Training  Microsoft Docs.md</a></li>
-<li><a href="#prerequisites-2">Prerequisites</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
 <li><a href="#log-in-to-azure-and-start-the-cloud-shell">Log in to Azure and start the Cloud Shell</a></li>
 <li><a href="#create-a-key-vault">Create a Key Vault</a></li>
 <li><a href="#add-and-retrieve-a-secret">Add and retrieve a secret</a></li>
 <li><a href="#clean-up-resources">Clean up resources</a></li>
 <li><a href="#implement-managed-identities---training--microsoft-docs.md">Implement managed identities - Training  Microsoft Docs.md</a></li>
-<li><a href="#learning-objectives-1">Learning objectives</a></li>
-<li><a href="#prerequisites-3">Prerequisites</a></li>
+<li><a href="#learning-objectives">Learning objectives</a></li>
+<li><a href="#prerequisites-1">Prerequisites</a></li>
 <li><a href="#introduction---training--microsoft-docs5.md">Introduction - Training  Microsoft Docs(5).md</a></li>
 <li><a href="#next-unit-explore-managed-identities">Next unit: Explore managed identities</a></li>
 <li><a href="#explore-managed-identities---training--microsoft-docs.md">Explore managed identities - Training  Microsoft Docs.md</a></li>
@@ -593,57 +575,24 @@ In addition to using activity log alerts, you can also configure email or webhoo
 <p>Now that the source slot has the pre-swap app previously in the target slot, perform the same operation by applying all settings and restarting the instances.</p>
 </li>
 </ol>
-
-<table>
-<thead>
-<tr>
-<th>Settings that are swapped</th>
-<th>Settings that aren’t swapped</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>General settings, such as framework version, 32/64-bit, web sockets</td>
-<td>Publishing endpoints</td>
-</tr>
-<tr>
-<td>App settings (can be configured to stick to a slot)</td>
-<td>Custom domain names</td>
-</tr>
-<tr>
-<td>Connection strings (can be configured to stick to a slot)</td>
-<td>Non-public certificates and TLS/SSL settings</td>
-</tr>
-<tr>
-<td>Handler mappings</td>
-<td>Scale settings</td>
-</tr>
-<tr>
-<td>Public certificates</td>
-<td>WebJobs schedulers</td>
-</tr>
-<tr>
-<td>WebJobs content</td>
-<td>IP restrictions</td>
-</tr>
-<tr>
-<td>Hybrid connections</td>
-<td>Always On</td>
-</tr>
-<tr>
-<td>Virtual network integration</td>
-<td>Diagnostic log settings</td>
-</tr>
-<tr>
-<td>Service endpoints</td>
-<td>Cross-origin resource sharing (CORS)</td>
-</tr>
-<tr>
-<td>Azure Content Delivery Network</td>
-<td></td>
-</tr>
-</tbody>
-</table><p>Settings can be made swappable or be prevented from swapping via configuration.</p>
+<p>| Settings that are swapped                                           | Settings that aren’t swapped                 |<br>
+| ------------------------------------------------------------------- | -------------------------------------------- | Settings that aren’t swapped |<br>
+|–|--|<br>
+| General settings, such as framework version, 32/64-bit, web sockets | Publishing endpoints                         |<br>
+| App settings (can be configured to stick to a slot)                 | Custom domain names                          |<br>
+| Connection strings (can be configured to stick to a slot)           | Non-public certificates and TLS/SSL settings |<br>
+| Handler mappings                                                    | Scale settings                               |<br>
+| Public certificates                                                 | WebJobs schedulers                           |<br>
+| WebJobs content                                                     | IP restrictions                              |<br>
+| Hybrid connections                                                  | Always On                                    |<br>
+| Virtual network integration                                        | Scale settings |<br>
+| Public certificates | WebJobs schedulers |<br>
+| WebJobs content | IP restrictions |<br>
+| Hybrid connections | Always On |<br>
+| Virtual network integration | Diagnostic log settings                      |<br>
+| Service endpoints                                                   | Cross-origin resource sharing (CORS)         |<br>
+| Azure Content Delivery Network                                      |                                             | |</p>
+<p>Settings can be made swappable or be prevented from swapping via configuration.</p>
 <h3 id="swap-deployment-slots">Swap deployment slots</h3>
 <h4 id="manually-swapping-deployment-slots">Manually swapping deployment slots</h4>
 <ol>
@@ -3198,37 +3147,30 @@ var newCalendar = await graphClient.Me.Calendars
     .Request()
     .AddAsync(calendar);
 </code></pre>
-<p><strong>hier weiter</strong></p>
-<h2 id="apply-best-practices-to-microsoft-graph---training--microsoft-docs.md">Apply best practices to Microsoft Graph - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<ul>
-<li>3 minutes</li>
-</ul>
-<p>This unit describes best practices that you can apply to help your applications get the most out of Microsoft Graph and make your application more reliable for end users.</p>
-<h2 id="authentication">Authentication</h2>
+<h3 id="apply-best-practices-to-microsoft-graph">Apply best practices to Microsoft Graph</h3>
+<h4 id="authentication">Authentication</h4>
 <p>To access the data in Microsoft Graph, your application will need to acquire an OAuth 2.0 access token, and present it to Microsoft Graph in either of the following:</p>
 <ul>
 <li>The HTTP <em>Authorization</em> request header, as a <em>Bearer</em> token</li>
 <li>The graph client constructor, when using a Microsoft Graph client library</li>
 </ul>
-<p>Use the Microsoft Authentication Library API, <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-libraries">MSAL</a> to acquire the access token to Microsoft Graph.</p>
+<p>Use the Microsoft Authentication Library API (MSAL),  to acquire the access token to Microsoft Graph.</p>
 <p>Apply the following best practices for consent and authorization in your app:</p>
 <ul>
 <li>
-<p><strong>Use least privilege</strong>. Only request permissions that are absolutely necessary, and only when you need them. For the APIs your application calls check the permissions section in the method topics. For example, see <a href="https://docs.microsoft.com/en-us/graph/api/user-post-users">creating a user</a> and choose the least privileged permissions.</p>
+<p><strong>Use least privilege</strong>. Only request permissions that are absolutely necessary, and only when you need them.</p>
 </li>
 <li>
 <p><strong>Use the correct permission type based on scenarios</strong>. If you’re building an interactive application where a signed in user is present, your application should use <em>delegated</em> permissions. If, however, your application runs without a signed-in user, such as a background service or daemon, your application should use application permissions.</p>
-<p>Caution</p>
-<p>Using application permissions for interactive scenarios can put your application at compliance and security risk. Be sure to check user’s privileges to ensure they don’t have undesired access to information, or are circumnavigating policies configured by an administrator.</p>
 </li>
 <li>
-<p><strong>Consider the end user and admin experience</strong>. This will directly affect end user and admin experiences. For example:</p>
+<p><strong>Consider the end user and admin experience</strong>. For example:</p>
 <ul>
 <li>
-<p>Consider who will be consenting to your application, either end users or administrators, and configure your application to <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent">request permissions appropriately</a>.</p>
+<p>Consider who will be consenting to your application, either end users or administrators, and configure your application to request permissions appropriately.</p>
 </li>
 <li>
-<p>Ensure that you understand the difference between <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent">static, dynamic and incremental consent</a>.</p>
+<p>Ensure that you understand the difference between static, dynamic and incremental consent</p>
 </li>
 </ul>
 </li>
@@ -3244,89 +3186,27 @@ var newCalendar = await graphClient.Me.Calendars
 </ul>
 </li>
 </ul>
-<h2 id="handle-responses-effectively">Handle responses effectively</h2>
-<p>Depending on the requests you make to Microsoft Graph, your applications should be prepared to handle different types of responses. The following are some of the most important practices to follow to ensure that your application behaves reliably and predictably for your end users. For example:</p>
+<h4 id="handle-responses-effectively">Handle responses effectively</h4>
+<p>Depending on the requests you make to Microsoft Graph, your applications should be prepared to handle different types of responses. For example:</p>
 <ul>
 <li>
-<p><strong>Pagination</strong>: When querying a resource collection, you should expect that Microsoft Graph will the return result set in multiple pages, due to server-side page size limits. Your application should <strong>always</strong> handle the possibility that the responses are paged in nature, and use the <code>@odata.nextLink</code> property to obtain the next paged set of results, until all pages of the result set have been read. The final page will not contain an <code>@odata.nextLink</code> property. For more details, see <a href="https://docs.microsoft.com/en-us/graph/paging">paging</a>.</p>
+<p><strong>Pagination</strong>: When querying a resource collection, you should expect that Microsoft Graph will the return result set in multiple pages, due to server-side page size limits.</p>
 </li>
 <li>
 <p><strong>Evolvable enumerations</strong>: Adding members to existing enumerations can break applications already using these enums. Evolvable enums is a mechanism that Microsoft Graph API uses to add new members to existing enumerations without causing a breaking change for applications. By default, a GET operation returns only known members for properties of evolvable enum types and your application needs to handle only the known members. If you design your application to handle unknown members as well, you can opt-in to receive those members by using an HTTP <code>Prefer</code> request header.</p>
 </li>
 </ul>
-<h2 id="storing-data-locally">Storing data locally</h2>
-<p>Your application should ideally make calls to Microsoft Graph to retrieve data in real time as necessary. You should only cache or store data locally if necessary for a specific scenario, and if that use case is covered by your terms of use and privacy policy, and does not violate the <a href="https://docs.microsoft.com/en-us/legal/microsoft-apis/terms-of-use?context=/graph/context">Microsoft APIs Terms of Use</a>. Your application should also implement proper retention and deletion policies.</p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.microsoft-graph.apply-best-practices-to&amp;documentId=5143a306-f46f-8125-7801-778a771fb634&amp;versionIndependentDocumentId=1007e128-4911-93aa-8902-9592dd50088d&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fmicrosoft-graph%2F5-microsoft-graph-best-practices.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fmicrosoft-graph%2F5-microsoft-graph-best-practices&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.microsoft-graph.apply-best-practices-to&amp;documentId=5143a306-f46f-8125-7801-778a771fb634&amp;versionIndependentDocumentId=1007e128-4911-93aa-8902-9592dd50088d&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fmicrosoft-graph%2F5-microsoft-graph-best-practices.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fmicrosoft-graph%2F5-microsoft-graph-best-practices&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
-<h2 id="az-204-implement-secure-cloud-solutions---training--microsoft-docs.md">AZ-204 Implement secure cloud solutions - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<p><img src="https://docs.microsoft.com/en-us/learn/achievements/cloud-solutions-implement.svg" alt=""></p>
-<ul>
-<li>1 hr 3 min</li>
-<li>Learning Path</li>
-<li>3 Modules</li>
-</ul>
-<p>Learn how to more securely deploy apps in Azure by using Azure Key Vault, managed identities, and Azure App Configuration.</p>
-<h2 id="prerequisites">Prerequisites</h2>
-<ul>
-<li>At least one year of experience developing scalable solutions through all phases of software development.</li>
-<li>Have a base understanding of Azure and cloud concepts, services, and the Azure portal.</li>
-<li>If you are new to Azure, or cloud computing, it is recommended you complete the <a href="https://docs.microsoft.com/en-us/learn/paths/az-900-describe-cloud-concepts/">AZ-900: Azure Fundamentals</a> course.</li>
-</ul>
-<h3 id="modules-in-this-learning-path">Modules in this learning path</h3>
-<h2 id="implement-azure-key-vault---training--microsoft-docs.md">Implement Azure Key Vault - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<ol>
-<li><a href="https://docs.microsoft.com/en-us/">Docs</a></li>
-<li><a href="https://docs.microsoft.com/en-us/learn/">Learn</a></li>
-<li><a href="https://docs.microsoft.com/en-us/learn/browse/">Browse</a></li>
-<li><a href="https://docs.microsoft.com/en-us/training/paths/az-204-implement-secure-cloud-solutions/">AZ-204: Implement secure cloud solutions</a></li>
-</ol>
-<p><img src="https://docs.microsoft.com/en-us/learn/achievements/azure-key-vault-implement.svg" alt=""></p>
-<ul>
-<li>21 min</li>
-<li>Module</li>
-<li>7 Units</li>
-</ul>
-<p>4.7 out of 5 stars from 743 votes</p>
-<p>5 star 80% 80%</p>
-<p>4 star 15% 15%</p>
-<p>3 star 3% 3%</p>
-<p>2 star 1% 1%</p>
-<p>1 star 1% 1%</p>
-<p>Intermediate</p>
-<p>Developer</p>
-<p>Key Vault</p>
-<p>Learn how Azure Key Vault can help you keep your apps more secure, and how to set and retrieve secrets by using the Azure CLI.</p>
-<h2 id="learning-objectives">Learning objectives</h2>
-<p>After completing this module, you’ll be able to:</p>
-<ul>
-<li>Describe the benefits of using Azure Key Vault</li>
-<li>Explain how to authenticate to Azure Key Vault</li>
-<li>Set and retrieve a secret from Azure Key Vault by using the Azure CLI</li>
-</ul>
-<h2 id="prerequisites-1">Prerequisites</h2>
-<ul>
-<li>You should be experienced with developer concepts and terminology.</li>
-<li>An understanding of cloud computing and some experience with the Azure portal.</li>
-</ul>
-<h2 id="introduction---training--microsoft-docs4.md">Introduction - Training  Microsoft Docs(4).md</h2>
-<ul>
-<li>3 minutes</li>
-</ul>
+<h4 id="storing-data-locally">Storing data locally</h4>
+<p>Your application should ideally make calls to Microsoft Graph to retrieve data in real time as necessary. You should only cache or store data locally if necessary for a specific scenario, and if that use case is covered by your terms of use and privacy policy, and does not violate the Microsoft APIs Terms of Use.</p>
+<h2 id="az-204-implement-secure-cloud-solutions">AZ-204 Implement secure cloud solutions</h2>
+<h3 id="implement-azure-key-vault">Implement Azure Key Vault</h3>
+<h4 id="explore-azure-key-vault">Explore Azure Key Vault</h4>
 <p>Azure Key Vault is a cloud service for securely storing and accessing secrets. A secret is anything that you want to tightly control access to, such as API keys, passwords, certificates, or cryptographic keys.</p>
-<p>After completing this module, you’ll be able to:</p>
+<p>The Azure Key Vault service supports two types of containers:</p>
 <ul>
-<li>Describe the benefits of using Azure Key Vault</li>
-<li>Explain how to authenticate to Azure Key Vault</li>
-<li>Set and retrieve a secret from Azure Key Vault by using the Azure CLI</li>
+<li>Vaults support storing software and HSM-backed keys, secrets, and certificates.</li>
+<li>Managed HSM pools only support HSM-backed keys.</li>
 </ul>
-<hr>
-<h2 id="next-unit-explore-azure-key-vault">Next unit: Explore Azure Key Vault</h2>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/implement-azure-key-vault/2-key-vault-overview/">Continue</a></p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-key-vault.introduction&amp;documentId=50769e36-467f-0e11-5e88-13927a1a0fad&amp;versionIndependentDocumentId=da8442db-de1e-a410-1a0f-f4e7c9844ee2&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-key-vault%2F1-introduction.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-key-vault%2F1-introduction&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-key-vault.introduction&amp;documentId=50769e36-467f-0e11-5e88-13927a1a0fad&amp;versionIndependentDocumentId=da8442db-de1e-a410-1a0f-f4e7c9844ee2&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-key-vault%2F1-introduction.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-key-vault%2F1-introduction&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
-<h2 id="explore-azure-key-vault---training--microsoft-docs.md">Explore Azure Key Vault - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<ul>
-<li>3 minutes</li>
-</ul>
-<p>The Azure Key Vault service supports two types of containers: vaults and managed hardware security module(HSM) pools. Vaults support storing software and HSM-backed keys, secrets, and certificates. Managed HSM pools only support HSM-backed keys.</p>
 <p>Azure Key Vault helps solve the following problems:</p>
 <ul>
 <li>
@@ -3339,11 +3219,15 @@ var newCalendar = await graphClient.Me.Calendars
 <p><strong>Certificate Management:</strong> Azure Key Vault is also a service that lets you easily provision, manage, and deploy public and private Secure Sockets Layer/Transport Layer Security (SSL/TLS) certificates for use with Azure and your internal connected resources.</p>
 </li>
 </ul>
-<p>Azure Key Vault has two service tiers: Standard, which encrypts with a software key, and a Premium tier, which includes hardware security module(HSM)-protected keys. To see a comparison between the Standard and Premium tiers, see the <a href="https://azure.microsoft.com/pricing/details/key-vault/">Azure Key Vault pricing page</a>.</p>
-<h2 id="key-benefits-of-using-azure-key-vault">Key benefits of using Azure Key Vault</h2>
+<p>Azure Key Vault has two service tiers:</p>
+<ul>
+<li>Standard, which encrypts with a software key</li>
+<li>Premium tier, which includes hardware security module(HSM)-protected keys.</li>
+</ul>
+<h4 id="key-benefits-of-using-azure-key-vault">Key benefits of using Azure Key Vault</h4>
 <ul>
 <li>
-<p><strong>Centralized application secrets:</strong> Centralizing storage of application secrets in Azure Key Vault allows you to control their distribution. For example, instead of storing the connection string in the app’s code you can store it securely in Key Vault. Your applications can securely access the information they need by using URIs. These URIs allow the applications to retrieve specific versions of a secret.</p>
+<p><strong>Centralized application secrets:</strong> Centralizing storage of application secrets in Azure Key Vault allows you to control their distribution. For example, your applications can securely access connection string by using URIs. These URIs allow the applications to retrieve specific versions of a secret.</p>
 </li>
 <li>
 <p><strong>Securely store secrets and keys:</strong> Access to a key vault requires proper authentication and authorization before a caller (user or application) can get access. Authentication is done via Azure Active Directory. Authorization may be done via Azure role-based access control (Azure RBAC) or Key Vault access policy. Azure RBAC is used when dealing with the management of the vaults and key vault access policy is used when attempting to access data stored in a vault. Azure Key Vaults may be either software-protected or, with the Azure Key Vault Premium tier, hardware-protected by hardware security modules (HSMs).</p>
@@ -3367,20 +3251,13 @@ var newCalendar = await graphClient.Me.Calendars
 </ul>
 </li>
 </ul>
-<hr>
-<h2 id="next-unit-discover-azure-key-vault-best-practices">Next unit: Discover Azure Key Vault best practices</h2>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/implement-azure-key-vault/3-key-vault-concepts/">Continue</a></p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-key-vault.explore&amp;documentId=9494faea-b07a-1c9f-e108-7a15555cea29&amp;versionIndependentDocumentId=55fa6bb8-789a-4b72-6769-721fc0cf0886&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-key-vault%2F2-key-vault-overview.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-key-vault%2F2-key-vault-overview&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-key-vault.explore&amp;documentId=9494faea-b07a-1c9f-e108-7a15555cea29&amp;versionIndependentDocumentId=55fa6bb8-789a-4b72-6769-721fc0cf0886&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-key-vault%2F2-key-vault-overview.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-key-vault%2F2-key-vault-overview&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
-<h2 id="discover-azure-key-vault-best-practices---training--microsoft-docs.md">Discover Azure Key Vault best practices - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<ul>
-<li>3 minutes</li>
-</ul>
-<p>Azure Key Vault is a tool for securely storing and accessing secrets. A secret is anything that you want to tightly control access to, such as API keys, passwords, or certificates. A vault is logical group of secrets.</p>
-<h2 id="authentication-1">Authentication</h2>
+<h3 id="discover-azure-key-vault-best-practices">Discover Azure Key Vault best practices</h3>
+<p>Azure Key Vault is a tool for securely storing and accessing secrets.</p>
+<h4 id="authentication-1">Authentication</h4>
 <p>To do any operations with Key Vault, you first need to authenticate to it. There are three ways to authenticate to Key Vault:</p>
 <ul>
 <li>
-<p><strong>Managed identities for Azure resources</strong>: When you deploy an app on a virtual machine in Azure, you can assign an identity to your virtual machine that has access to Key Vault. You can also assign identities to other Azure resources. The benefit of this approach is that the app or service isn’t managing the rotation of the first secret. Azure automatically rotates the service principal client secret associated with the identity. We recommend this approach as a best practice.</p>
+<p><strong>Managed identities for Azure resources</strong>: When you deploy an app on a virtual machine in Azure, you can assign an identity to your virtual machine that has access to Key Vault or other Azure resources. Azure automatically rotates the service principal client secret associated with the identity. We recommend this approach as a best practice.</p>
 </li>
 <li>
 <p><strong>Service principal and certificate</strong>: You can use a service principal and an associated certificate that has access to Key Vault. We don’t recommend this approach because the application owner or developer must rotate the certificate.</p>
@@ -3389,13 +3266,13 @@ var newCalendar = await graphClient.Me.Calendars
 <p><strong>Service principal and secret</strong>: Although you can use a service principal and a secret to authenticate to Key Vault, we don’t recommend it. It’s hard to automatically rotate the bootstrap secret that’s used to authenticate to Key Vault.</p>
 </li>
 </ul>
-<h2 id="encryption-of-data-in-transit">Encryption of data in transit</h2>
-<p>Azure Key Vault enforces Transport Layer Security (TLS) protocol to protect data when it’s traveling between Azure Key Vault and clients. Clients negotiate a TLS connection with Azure Key Vault. TLS provides strong authentication, message privacy, and integrity (enabling detection of message tampering, interception, and forgery), interoperability, algorithm flexibility, and ease of deployment and use.</p>
-<p>Perfect Forward Secrecy (PFS) protects connections between customers’ client systems and Microsoft cloud services by unique keys. Connections also use RSA-based 2,048-bit encryption key lengths. This combination makes it difficult for someone to intercept and access data that is in transit.</p>
-<h2 id="azure-key-vault-best-practices">Azure Key Vault best practices</h2>
+<h4 id="encryption-of-data-in-transit">Encryption of data in transit</h4>
+<p>Azure Key Vault enforces Transport Layer Security (TLS) protocol to protect data when it’s traveling between Azure Key Vault and clients.</p>
+<p>Perfect Forward Secrecy (PFS) protects connections between customers’ client systems and Microsoft cloud services by unique keys. Connections also use RSA-based 2,048-bit encryption key lengths.</p>
+<h4 id="azure-key-vault-best-practices">Azure Key Vault best practices</h4>
 <ul>
 <li>
-<p><strong>Use separate key vaults:</strong> Recommended to use a vault per application per environment (Development, Pre-Production and Production). This helps you not share secrets across environments and also reduces the threat in case of a breach.</p>
+<p><strong>Use separate key vaults:</strong> Recommended to use a vault per application per environment.</p>
 </li>
 <li>
 <p><strong>Control access to your vault:</strong> Key Vault data is sensitive and business critical, you need to secure access to your key vaults by allowing only authorized applications and users.</p>
@@ -3407,13 +3284,10 @@ var newCalendar = await graphClient.Me.Calendars
 <p><strong>Logging:</strong> Be sure to turn on logging and alerts.</p>
 </li>
 <li>
-<p><strong>Recovery options:</strong> Turn on <a href="https://docs.microsoft.com/en-us/azure/key-vault/general/soft-delete-overview">soft-delete</a> and purge protection if you want to guard against force deletion of the secret.</p>
+<p><strong>Recovery options:</strong> Turn on soft-delete and purge protection if you want to guard against force deletion of the secret.</p>
 </li>
 </ul>
-<hr>
-<h2 id="next-unit-authenticate-to-azure-key-vault">Next unit: Authenticate to Azure Key Vault</h2>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/implement-azure-key-vault/4-key-vault-authentication/">Continue</a></p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-key-vault.discover-best-practices&amp;documentId=22d6c72f-8b3e-6938-08b0-b2516799e285&amp;versionIndependentDocumentId=ba5e384b-6559-1022-d196-bf8db161e22e&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-key-vault%2F3-key-vault-concepts.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-key-vault%2F3-key-vault-concepts&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-key-vault.discover-best-practices&amp;documentId=22d6c72f-8b3e-6938-08b0-b2516799e285&amp;versionIndependentDocumentId=ba5e384b-6559-1022-d196-bf8db161e22e&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-key-vault%2F3-key-vault-concepts.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-key-vault%2F3-key-vault-concepts&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
+<p>** hier weiter **</p>
 <h2 id="authenticate-to-azure-key-vault---training--microsoft-docs.md">Authenticate to Azure Key Vault - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
 <ul>
 <li>3 minutes</li>
@@ -3469,7 +3343,7 @@ WWW-Authenticate: Bearer authorization="…", resource="…"
 <li>Create a Key Vault</li>
 <li>Add and retrieve a secret</li>
 </ul>
-<h2 id="prerequisites-2">Prerequisites</h2>
+<h2 id="prerequisites">Prerequisites</h2>
 <ul>
 <li>
 <ul>
@@ -3555,7 +3429,7 @@ myLocation=&lt;myLocation&gt;
 <p>Developer</p>
 <p>Azure</p>
 <p>Learn how managed identities can help you deploy secure solutions on Azure without the need to manage credentials.</p>
-<h2 id="learning-objectives-1">Learning objectives</h2>
+<h2 id="learning-objectives">Learning objectives</h2>
 <p>After completing this module, you’ll be able to:</p>
 <ul>
 <li>Explain the differences between the two types of managed identities</li>
@@ -3563,7 +3437,7 @@ myLocation=&lt;myLocation&gt;
 <li>Configure managed identities</li>
 <li>Acquire access tokens by using REST and code</li>
 </ul>
-<h2 id="prerequisites-3">Prerequisites</h2>
+<h2 id="prerequisites-1">Prerequisites</h2>
 <ul>
 <li>You should be experienced with developer concepts and terminology.</li>
 <li>An understanding of cloud computing and some experience with the Azure portal.</li>
@@ -3632,6 +3506,7 @@ myLocation=&lt;myLocation&gt;
 <p>The rest of this module will use Azure virtual machines in the examples, but the same concepts and similar actions can be applied to any resource in Azure that supports Azure Active Directory authentication.</p>
 <hr>
 <h2 id="next-unit-discover-the-managed-identities-authentication-flow">Next unit: Discover the managed identities authentication flow</h2>
+<p><a href="https://docs.microsoft.com/en-us/learn/paths/implement-azure-functions/">AZ-204: Implement Azure Functions - Learn | Microsoft Docs</a></p>
 
     </div>
   </div>
