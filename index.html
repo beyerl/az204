@@ -78,20 +78,9 @@
 <li><a href="#implement-authentication-by-using-the-microsoft-authentication-library">Implement authentication by using the Microsoft Authentication Library</a></li>
 <li><a href="#explore-microsoft-graph">Explore Microsoft Graph</a></li>
 <li><a href="#az-204-implement-secure-cloud-solutions">AZ-204 Implement secure cloud solutions</a></li>
-<li><a href="#authenticate-to-azure-key-vault---training--microsoft-docs.md">Authenticate to Azure Key Vault - Training  Microsoft Docs.md</a></li>
-<li><a href="#authentication-to-key-vault-in-application-code">Authentication to Key Vault in application code</a></li>
-<li><a href="#authentication-to-key-vault-with-rest">Authentication to Key Vault with REST</a></li>
-<li><a href="#additional-resources">Additional resources</a></li>
-<li><a href="#next-unit-exercise-set-and-retrieve-a-secret-from-azure-key-vault-by-using-azure-cli">Next unit: Exercise: Set and retrieve a secret from Azure Key Vault by using Azure CLI</a></li>
-<li><a href="#exercise-set-and-retrieve-a-secret-from-azure-key-vault-by-using-azure-cli---training--microsoft-docs.md">Exercise Set and retrieve a secret from Azure Key Vault by using Azure CLI - Training  Microsoft Docs.md</a></li>
-<li><a href="#prerequisites">Prerequisites</a></li>
-<li><a href="#log-in-to-azure-and-start-the-cloud-shell">Log in to Azure and start the Cloud Shell</a></li>
-<li><a href="#create-a-key-vault">Create a Key Vault</a></li>
-<li><a href="#add-and-retrieve-a-secret">Add and retrieve a secret</a></li>
-<li><a href="#clean-up-resources">Clean up resources</a></li>
 <li><a href="#implement-managed-identities---training--microsoft-docs.md">Implement managed identities - Training  Microsoft Docs.md</a></li>
 <li><a href="#learning-objectives">Learning objectives</a></li>
-<li><a href="#prerequisites-1">Prerequisites</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
 <li><a href="#introduction---training--microsoft-docs5.md">Introduction - Training  Microsoft Docs(5).md</a></li>
 <li><a href="#next-unit-explore-managed-identities">Next unit: Explore managed identities</a></li>
 <li><a href="#explore-managed-identities---training--microsoft-docs.md">Explore managed identities - Training  Microsoft Docs.md</a></li>
@@ -3287,27 +3276,26 @@ var newCalendar = await graphClient.Me.Calendars
 <p><strong>Recovery options:</strong> Turn on soft-delete and purge protection if you want to guard against force deletion of the secret.</p>
 </li>
 </ul>
-<p>** hier weiter **</p>
-<h2 id="authenticate-to-azure-key-vault---training--microsoft-docs.md">Authenticate to Azure Key Vault - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<ul>
-<li>3 minutes</li>
-</ul>
+<h3 id="authenticate-to-azure-key-vault">Authenticate to Azure Key Vault</h3>
 <p>Authentication with Key Vault works in conjunction with Azure Active Directory, which is responsible for authenticating the identity of any given security principal.</p>
 <p>For applications, there are two ways to obtain a service principal:</p>
 <ul>
 <li>
-<p>Enable a system-assigned <strong>managed identity</strong> for the application. With managed identity, Azure internally manages the application’s service principal and automatically authenticates the application with other Azure services. Managed identity is available for applications deployed to a variety of services.</p>
+<p>Enable a system-assigned <strong>managed identity</strong> for the application. With managed identity, Azure internally manages the application’s service principal and automatically authenticates the application with other Azure services.</p>
 </li>
 <li>
 <p>If you cannot use managed identity, you instead register the application with your Azure AD tenant. Registration also creates a second application object that identifies the app across all tenants.</p>
 </li>
 </ul>
-<p>Note</p>
-<p>It is recommended to use a system-assigned managed identity.</p>
-<p>Below is information on authenticating to Key Vault without using a managed identity.</p>
-<h2 id="authentication-to-key-vault-in-application-code">Authentication to Key Vault in application code</h2>
-<p>Key Vault SDK is using Azure Identity client library, which allows seamless authentication to Key Vault across environments with same code. The table below provides information on the Azure Identity client libraries:</p>
-<h2 id="authentication-to-key-vault-with-rest">Authentication to Key Vault with REST</h2>
+<h4 id="authentication-to-key-vault-in-application-code">Authentication to Key Vault in application code</h4>
+<p>Key Vault SDK is using Azure Identity client library, which allows seamless authentication to Key Vault across environments with same code. Available Azure Identity client libraries:</p>
+<ul>
+<li>Azure Identity SDK .NET</li>
+<li>Azure Identity SDK Python</li>
+<li>Azure Identity SDK Java</li>
+<li>Azure Identity SDK JavaScript</li>
+</ul>
+<h4 id="authentication-to-key-vault-with-rest">Authentication to Key Vault with REST</h4>
 <p>Access tokens must be sent to the service using the HTTP Authorization header:</p>
 <pre><code>PUT /keys/MYKEY?api-version=&lt;api_version&gt;  HTTP/1.1  
 Authorization: Bearer &lt;access_token&gt;
@@ -3325,87 +3313,7 @@ WWW-Authenticate: Bearer authorization="…", resource="…"
 <p>resource: The name of the resource (<code>https://vault.azure.net</code>) to use in the authorization request.</p>
 </li>
 </ul>
-<h2 id="additional-resources">Additional resources</h2>
-<ul>
-<li><a href="https://docs.microsoft.com/en-us/azure/key-vault/general/developers-guide">Azure Key Vault developer’s guide</a></li>
-<li><a href="https://docs.microsoft.com/en-us/azure/key-vault/general/disaster-recovery-guidance">Azure Key Vault availability and redundancy</a></li>
-</ul>
-<hr>
-<h2 id="next-unit-exercise-set-and-retrieve-a-secret-from-azure-key-vault-by-using-azure-cli">Next unit: Exercise: Set and retrieve a secret from Azure Key Vault by using Azure CLI</h2>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/implement-azure-key-vault/5-set-retrieve-secret-azure-key-vault/">Continue</a></p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-key-vault.authenticate-to&amp;documentId=b1f8f422-4005-53aa-da35-edfe63f5139f&amp;versionIndependentDocumentId=314d2212-0ab5-98ce-befa-31312b4a87e9&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-key-vault%2F4-key-vault-authentication.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-key-vault%2F4-key-vault-authentication&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-key-vault.authenticate-to&amp;documentId=b1f8f422-4005-53aa-da35-edfe63f5139f&amp;versionIndependentDocumentId=314d2212-0ab5-98ce-befa-31312b4a87e9&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-key-vault%2F4-key-vault-authentication.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-key-vault%2F4-key-vault-authentication&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
-<h2 id="exercise-set-and-retrieve-a-secret-from-azure-key-vault-by-using-azure-cli---training--microsoft-docs.md">Exercise Set and retrieve a secret from Azure Key Vault by using Azure CLI - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<ul>
-<li>3 minutes</li>
-</ul>
-<p>In this exercise you’ll learn how to perform the following actions by using the Azure CLI:</p>
-<ul>
-<li>Create a Key Vault</li>
-<li>Add and retrieve a secret</li>
-</ul>
-<h2 id="prerequisites">Prerequisites</h2>
-<ul>
-<li>
-<ul>
-<li>An <strong>Azure account</strong> with an active subscription. If you don’t already have one, you can sign up for a free trial at <a href="https://azure.com/free">https://azure.com/free</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="log-in-to-azure-and-start-the-cloud-shell">Log in to Azure and start the Cloud Shell</h2>
-<ol>
-<li>
-<p>Log in to the <a href="https://portal.azure.com/">Azure portal</a> and open the Cloud Shell.</p>
-<p><img src="https://docs.microsoft.com/en-us/training/wwl-azure/implement-azure-key-vault/media/cloud-shell-menu.png" alt="The location of Cloud Shell launch button."></p>
-</li>
-<li>
-<p>After the shell opens be sure to select the <strong>Bash</strong> environment.</p>
-<p><img src="https://docs.microsoft.com/en-us/training/wwl-azure/implement-azure-key-vault/media/shell-bash-selection.png" alt="Selecting the Bash environment."></p>
-</li>
-</ol>
-<h2 id="create-a-key-vault">Create a Key Vault</h2>
-<ol>
-<li>
-<p>Let’s set some variables for the CLI commands to use to reduce the amount of retyping. Replace the <code>&lt;myLocation&gt;</code> variable string below with a region that makes sense for you. The Key Vault name needs to be a globally unique name, and the script below generates a random string.</p>
-<pre><code>myKeyVault=az204vault-$RANDOM
-myLocation=&lt;myLocation&gt;
-</code></pre>
-</li>
-<li>
-<p>Create a resource group.</p>
-<pre><code>az group create --name az204-vault-rg --location $myLocation
-</code></pre>
-</li>
-<li>
-<p>Create a Key Vault by using the <code>az keyvault create</code> command.</p>
-<pre><code>az keyvault create --name $myKeyVault --resource-group az204-vault-rg --location $myLocation
-</code></pre>
-<p>Note</p>
-<p>This can take a few minutes to run.</p>
-</li>
-</ol>
-<h2 id="add-and-retrieve-a-secret">Add and retrieve a secret</h2>
-<p>To add a secret to the vault, you just need to take a couple of additional steps.</p>
-<ol>
-<li>
-<p>Create a secret. Let’s add a password that could be used by an app. The password will be called <strong>ExamplePassword</strong> and will store the value of <strong>hVFkk965BuUv</strong> in it.</p>
-<pre><code>az keyvault secret set --vault-name $myKeyVault --name "ExamplePassword" --value "hVFkk965BuUv"
-</code></pre>
-</li>
-<li>
-<p>Use the <code>az keyvault secret show</code> command to retrieve the secret.</p>
-<pre><code>az keyvault secret show --name "ExamplePassword" --vault-name $myKeyVault
-</code></pre>
-<p>This command will return some JSON. The last line will contain the password in plain text.</p>
-<pre><code>"value": "hVFkk965BuUv"
-</code></pre>
-</li>
-</ol>
-<p>You have created a Key Vault, stored a secret, and retrieved it.</p>
-<h2 id="clean-up-resources">Clean up resources</h2>
-<p>When you no longer need the resources in this exercise use the following command to delete the resource group and associated Key Vault.</p>
-<pre><code>az group delete --name az204-vault-rg --no-wait 
-</code></pre>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-key-vault.exercise-set-retrieve-secret-from-by-using-azure-cli&amp;documentId=72b63951-3e3d-42ef-ac02-ce74af2ab1ec&amp;versionIndependentDocumentId=d9a7113c-ca4f-c5f1-974b-3d2874e7ed6f&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-key-vault%2F5-set-retrieve-secret-azure-key-vault.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-key-vault%2F5-set-retrieve-secret-azure-key-vault&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-key-vault.exercise-set-retrieve-secret-from-by-using-azure-cli&amp;documentId=72b63951-3e3d-42ef-ac02-ce74af2ab1ec&amp;versionIndependentDocumentId=d9a7113c-ca4f-c5f1-974b-3d2874e7ed6f&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-key-vault%2F5-set-retrieve-secret-azure-key-vault.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-key-vault%2F5-set-retrieve-secret-azure-key-vault&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
+<p><strong>hier weiter</strong></p>
 <h2 id="implement-managed-identities---training--microsoft-docs.md">Implement managed identities - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
 <ol>
 <li><a href="https://docs.microsoft.com/en-us/">Docs</a></li>
@@ -3437,7 +3345,7 @@ myLocation=&lt;myLocation&gt;
 <li>Configure managed identities</li>
 <li>Acquire access tokens by using REST and code</li>
 </ul>
-<h2 id="prerequisites-1">Prerequisites</h2>
+<h2 id="prerequisites">Prerequisites</h2>
 <ul>
 <li>You should be experienced with developer concepts and terminology.</li>
 <li>An understanding of cloud computing and some experience with the Azure portal.</li>
