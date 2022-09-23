@@ -80,8 +80,6 @@
 <li><a href="#az-204-implement-secure-cloud-solutions">AZ-204 Implement secure cloud solutions</a></li>
 <li><a href="#implement-managed-identities">Implement managed identities</a></li>
 <li><a href="#implement-azure-app-configuration">Implement Azure App Configuration</a></li>
-<li><a href="#values">Values</a></li>
-<li><a href="#next-unit-manage-application-features">Next unit: Manage application features</a></li>
 <li><a href="#manage-application-features---training--microsoft-docs.md">Manage application features - Training  Microsoft Docs.md</a></li>
 <li><a href="#basic-concepts-1">Basic concepts</a></li>
 <li><a href="#feature-flag-usage-in-code-1">Feature flag usage in code</a></li>
@@ -3598,24 +3596,20 @@ AppName:Region2:DbEndpoint
 </code></pre>
 </li>
 </ul>
-<h3 id="label-keys">Label keys</h3>
-<p>Key values in App Configuration can optionally have a label attribute. Labels are used to differentiate key values with the same key. A key <em>app1</em> with labels <em>A</em> and <em>B</em> forms two separate keys in an App Configuration store. By default, the label for a key value is empty, or <code>null</code>.</p>
+<h5 id="label-keys">Label keys</h5>
 <p>Label provides a convenient way to create variants of a key. A common use of labels is to specify multiple environments for the same key:</p>
 <pre><code>Key = AppName:DbEndpoint &amp; Label = Test
 Key = AppName:DbEndpoint &amp; Label = Staging
 Key = AppName:DbEndpoint &amp; Label = Production
 </code></pre>
-<h3 id="version-key-values">Version key values</h3>
+<h5 id="version-key-values">Version key values</h5>
 <p>App Configuration doesn’t version key values automatically as they’re modified. Use labels as a way to create multiple versions of a key value. For example, you can input an application version number or a Git commit ID in labels to identify key values associated with a particular software build.</p>
-<h3 id="query-key-values">Query key values</h3>
+<h5 id="query-key-values">Query key values</h5>
 <p>Each key value is uniquely identified by its key plus a label that can be <code>null</code>. You query an App Configuration store for key values by specifying a pattern. The App Configuration store returns all key values that match the pattern and their corresponding values and attributes.</p>
-<h2 id="values">Values</h2>
+<h4 id="values">Values</h4>
 <p>Values assigned to keys are also unicode strings. You can use all unicode characters for values. There’s an optional user-defined content type associated with each value. Use this attribute to store information, for example an encoding scheme, about a value that helps your application to process it properly.</p>
 <p>Configuration data stored in an App Configuration store, which includes all keys and values, is encrypted at rest and in transit. App Configuration isn’t a replacement solution for Azure Key Vault. Don’t store application secrets in it.</p>
-<hr>
-<h2 id="next-unit-manage-application-features">Next unit: Manage application features</h2>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/implement-azure-app-configuration/4-app-configuration-feature-management/">Continue</a></p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-app-configuration.create-paired-keys-values&amp;documentId=0cac7fc4-0e38-b7a8-8950-28134253cbc7&amp;versionIndependentDocumentId=187e23c6-9de2-ca8f-bcc7-9a49be3e3cf2&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-app-configuration%2F3-keys-values.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-app-configuration%2F3-keys-values&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-app-configuration.create-paired-keys-values&amp;documentId=0cac7fc4-0e38-b7a8-8950-28134253cbc7&amp;versionIndependentDocumentId=187e23c6-9de2-ca8f-bcc7-9a49be3e3cf2&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-app-configuration%2F3-keys-values.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-app-configuration%2F3-keys-values&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
+<p><strong>hier weiter</strong></p>
 <h2 id="manage-application-features---training--microsoft-docs.md">Manage application features - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
 <ul>
 <li>3 minutes</li>
