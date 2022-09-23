@@ -79,10 +79,14 @@
 <li><a href="#explore-microsoft-graph">Explore Microsoft Graph</a></li>
 <li><a href="#az-204-implement-secure-cloud-solutions">AZ-204 Implement secure cloud solutions</a></li>
 <li><a href="#implement-managed-identities">Implement managed identities</a></li>
-<li><a href="#characteristics-of-managed-identities">Characteristics of managed identities</a></li>
-<li><a href="#when-to-use-managed-identities">When to use managed identities</a></li>
-<li><a href="#what-azure-services-support-managed-identities">What Azure services support managed identities?</a></li>
-<li><a href="#next-unit-discover-the-managed-identities-authentication-flow">Next unit: Discover the managed identities authentication flow</a></li>
+<li><a href="#implement-azure-app-configuration">Implement Azure App Configuration</a></li>
+<li><a href="#values">Values</a></li>
+<li><a href="#next-unit-manage-application-features">Next unit: Manage application features</a></li>
+<li><a href="#manage-application-features---training--microsoft-docs.md">Manage application features - Training  Microsoft Docs.md</a></li>
+<li><a href="#basic-concepts-1">Basic concepts</a></li>
+<li><a href="#feature-flag-usage-in-code-1">Feature flag usage in code</a></li>
+<li><a href="#feature-flag-declaration-1">Feature flag declaration</a></li>
+<li><a href="#feature-flag-repository-1">Feature flag repository</a></li>
 </ul>
 </li>
 </ul>
@@ -3311,16 +3315,17 @@ WWW-Authenticate: Bearer authorization="…", resource="…"
 <h3 id="explore-managed-identities">Explore managed identities</h3>
 <p>A common challenge for developers is the management of secrets and credentials used to secure communication between different components making up a solution. Managed identities eliminate the need for developers to manage credentials.</p>
 <p>Managed identities provide an identity for applications to use when connecting to resources that support Azure Active Directory (Azure AD) authentication. Applications may use the managed identity to obtain Azure AD tokens. For example, an application may use a managed identity to access resources like Azure Key Vault where developers can store credentials in a secure manner or to access storage accounts.</p>
-<p><strong>hier weiter</strong></p>
 <h4 id="types-of-managed-identities">Types of managed identities</h4>
 <p>There are two types of managed identities:</p>
 <ul>
-<li>A <strong>system-assigned managed identity</strong> is enabled directly on an Azure service instance. When the identity is enabled, Azure creates an identity for the instance in the Azure AD tenant that’s trusted by the subscription of the instance. After the identity is created, the credentials are provisioned onto the instance. The lifecycle of a system-assigned identity is directly tied to the Azure service instance that it’s enabled on. If the instance is deleted, Azure automatically cleans up the credentials and the identity in Azure AD.</li>
-<li>A <strong>user-assigned managed identity</strong> is created as a standalone Azure resource. Through a create process, Azure creates an identity in the Azure AD tenant that’s trusted by the subscription in use. After the identity is created, the identity can be assigned to one or more Azure service instances. The lifecycle of a user-assigned identity is managed separately from the lifecycle of the Azure service instances to which it’s assigned.</li>
+<li>
+<p><strong>system-assigned managed identity</strong></p>
+</li>
+<li>
+<p><strong>user-assigned managed identity</strong></p>
+</li>
 </ul>
-<p>Internally, managed identities are service principals of a special type, which are locked to only be used with Azure resources. When the managed identity is deleted, the corresponding service principal is automatically removed.</p>
-<h2 id="characteristics-of-managed-identities">Characteristics of managed identities</h2>
-<p>The table below highlights some of the key differences between the two types of managed identities.</p>
+<h4 id="characteristics-of-managed-identities">Characteristics of managed identities</h4>
 
 <table>
 <thead>
@@ -3347,15 +3352,329 @@ WWW-Authenticate: Bearer authorization="…", resource="…"
 <td>Can be shared, the same user-assigned managed identity can be associated with more than one Azure resource.</td>
 </tr>
 </tbody>
-</table><h2 id="when-to-use-managed-identities">When to use managed identities</h2>
-<p>The image below gives an overview the scenarios that support using managed identities. For example, you can use managed identities if you want to build an app using Azure App Services that accesses Azure Storage without having to manage any credentials.</p>
+</table><h4 id="when-to-use-managed-identities">When to use managed identities</h4>
+<p>The image below gives an overview of the scenarios that support using managed identities. For example, you can use managed identities if you want to build an app using Azure App Services that accesses Azure Storage without having to manage any credentials.</p>
 <p><img src="https://docs.microsoft.com/en-us/training/wwl-azure/implement-managed-identities/media/managed-identities-use-case.png" alt="Image showing a list of sources that gain access to targets through Azure Active Directory."></p>
-<h2 id="what-azure-services-support-managed-identities">What Azure services support managed identities?</h2>
-<p>Managed identities for Azure resources can be used to authenticate to services that support Azure Active Directory authentication. For a list of Azure services that support the managed identities for Azure resources feature, visit <a href="https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/services-support-msi">Services that support managed identities for Azure resources</a>.</p>
-<p>The rest of this module will use Azure virtual machines in the examples, but the same concepts and similar actions can be applied to any resource in Azure that supports Azure Active Directory authentication.</p>
+<h4 id="what-azure-services-support-managed-identities">What Azure services support managed identities?</h4>
+<p>Managed identities for Azure resources can be used to authenticate to services that support Azure Active Directory authentication.</p>
+<h3 id="discover-the-managed-identities-authentication-flow">Discover the managed identities authentication flow</h3>
+<h4 id="how-a-system-assigned-managed-identity-works-with-an-azure-virtual-machine">How a system-assigned managed identity works with an Azure virtual machine</h4>
+<ol>
+<li>
+<p>Azure Resource Manager receives a request to enable the system-assigned managed identity on a virtual machine.</p>
+</li>
+<li>
+<p>Azure Resource Manager creates a service principal in Azure Active Directory for the identity of the virtual machine. The service principal is created in the Azure Active Directory tenant that’s trusted by the subscription.</p>
+</li>
+<li>
+<p>Azure Resource Manager configures the identity on the virtual machine by updating the Azure Instance Metadata Service identity endpoint with the service principal client ID and certificate.</p>
+</li>
+<li>
+<p>After the virtual machine has an identity, use the service principal information to grant the virtual machine access to Azure resources. To call Azure Resource Manager, use role-based access control in Azure Active Directory to assign the appropriate role to the virtual machine service principal. To call Key Vault, grant your code access to the specific secret or key in Key Vault.</p>
+</li>
+<li>
+<p>Your code that’s running on the virtual machine can request a token from the Azure Instance Metadata service endpoint, accessible only from within the virtual machine: <code>http://169.254.169.254/metadata/identity/oauth2/token</code></p>
+</li>
+<li>
+<p>A call is made to Azure Active Directory to request an access token (as specified in step 5) by using the client ID and certificate configured in step 3. Azure Active Directory returns a JSON Web Token (JWT) access token.</p>
+</li>
+<li>
+<p>Your code sends the access token on a call to a service that supports Azure Active Directory authentication.</p>
+</li>
+</ol>
+<h4 id="how-a-user-assigned-managed-identity-works-with-an-azure-virtual-machine">How a user-assigned managed identity works with an Azure virtual machine</h4>
+<ol>
+<li>
+<p>Azure Resource Manager receives a request to create a user-assigned managed identity.</p>
+</li>
+<li>
+<p>Azure Resource Manager creates a service principal in Azure Active Directory for the user-assigned managed identity. The service principal is created in the Azure Active Directory tenant that’s trusted by the subscription.</p>
+</li>
+<li>
+<p>Azure Resource Manager receives a request to configure the user-assigned managed identity on a virtual machine and updates the Azure Instance Metadata Service identity endpoint with the user-assigned managed identity service principal client ID and certificate.</p>
+</li>
+<li>
+<p>After the user-assigned managed identity is created, use the service principal information to grant the identity access to Azure resources. To call Azure Resource Manager, use role-based access control in Azure Active Directory to assign the appropriate role to the service principal of the user-assigned identity. To call Key Vault, grant your code access to the specific secret or key in Key Vault.</p>
+</li>
+<li>
+<p>Your code that’s running on the virtual machine can request a token from the Azure Instance Metadata Service identity endpoint, accessible only from within the virtual machine: <code>http://169.254.169.254/metadata/identity/oauth2/token</code></p>
+</li>
+<li>
+<p>A call is made to Azure Active Directory to request an access token (as specified in step 5) by using the client ID and certificate configured in step 3. Azure Active Directory returns a JSON Web Token (JWT) access token.</p>
+</li>
+<li>
+<p>Your code sends the access token on a call to a service that supports Azure Active Directory authentication.</p>
+</li>
+</ol>
+<h3 id="configure-managed-identities">Configure managed identities</h3>
+<p>You can configure an Azure virtual machine with a managed identity during, or after, the creation of the virtual machine.</p>
+<h4 id="system-assigned-managed-identity">System-assigned managed identity</h4>
+<p>To create, or enable, an Azure virtual machine with the system-assigned managed identity your account needs the <strong>Virtual Machine Contributor</strong> role assignment. No additional Azure AD directory role assignments are required.</p>
+<h5 id="enable-system-assigned-managed-identity-during-creation-of-an-azure-virtual-machine">Enable system-assigned managed identity during creation of an Azure virtual machine</h5>
+<p>The following example creates a virtual machine named <em>myVM</em> with a system-assigned managed identity, as requested by the <code>--assign-identity</code> parameter, with the specified <code>--role</code> and <code>--scope</code>. The <code>--admin-username</code> and <code>--admin-password</code> parameters specify the administrative user name and password account for virtual machine sign-in. Update these values as appropriate for your environment:</p>
+<pre><code>az vm create --resource-group myResourceGroup \ 
+    --name myVM --image win2016datacenter \ 
+    --generate-ssh-keys \ 
+    --assign-identity \ 
+    --role contributor \
+    --scope mySubscription \
+    --admin-username azureuser \ 
+    --admin-password myPassword12
+</code></pre>
+<h5 id="enable-system-assigned-managed-identity-on-an-existing-azure-virtual-machine">Enable system-assigned managed identity on an existing Azure virtual machine</h5>
+<pre><code>az vm identity assign -g myResourceGroup -n myVm
+</code></pre>
+<h4 id="user-assigned-managed-identity">User-assigned managed identity</h4>
+<p>To assign a user-assigned identity to a virtual machine during its creation, your account needs the <strong>Virtual Machine Contributor</strong> and <strong>Managed Identity Operator</strong> role assignments. No additional Azure AD directory role assignments are required.</p>
+<p>Enabling user-assigned managed identities is a two-step process:</p>
+<ol>
+<li>Create the user-assigned identity</li>
+<li>Assign the identity to a virtual machine</li>
+</ol>
+<h5 id="create-a-user-assigned-identity">Create a user-assigned identity</h5>
+<pre><code>az identity create -g myResourceGroup -n myUserAssignedIdentity
+</code></pre>
+<h5 id="assign-a-user-assigned-managed-identity-during-the-creation-of-an-azure-virtual-machine">Assign a user-assigned managed identity during the creation of an Azure virtual machine</h5>
+<pre><code>az vm create \
+--resource-group &lt;RESOURCE GROUP&gt; \
+--name &lt;VM NAME&gt; \
+--image UbuntuLTS \
+--admin-username &lt;USER NAME&gt; \
+--admin-password &lt;PASSWORD&gt; \
+--assign-identity &lt;USER ASSIGNED IDENTITY NAME&gt; \
+--role &lt;ROLE&gt; \
+--scope &lt;SUBSCRIPTION&gt;
+</code></pre>
+<h5 id="assign-a-user-assigned-managed-identity-to-an-existing-azure-virtual-machine">Assign a user-assigned managed identity to an existing Azure virtual machine</h5>
+<pre><code>az vm identity assign \
+    -g &lt;RESOURCE GROUP&gt; \
+    -n &lt;VM NAME&gt; \
+    --identities &lt;USER ASSIGNED IDENTITY&gt;
+</code></pre>
+<h3 id="acquire-an-access-token">Acquire an access token</h3>
+<p>A client application can request managed identities for Azure resources app-only access token for accessing a given resource. The token is based on the managed identities for Azure resources service principal. As such, there is no need for the client to register itself to obtain an access token under its own service principal. The token is suitable for use as a bearer token in service-to-service calls requiring client credentials.</p>
+<p>This unit provides various code and script examples for token acquisition, as well as guidance on important topics such as handling token expiration and HTTP errors.</p>
+<h4 id="acquire-a-token">Acquire a token</h4>
+<p>The fundamental interface for acquiring an access token is based on REST, making it accessible to any client application running on the VM that can make HTTP REST calls. This is similar to the Azure AD programming model, except the client uses an endpoint on the virtual machine versus an Azure AD endpoint.</p>
+<p>Sample request using the Azure Instance Metadata Service (IMDS) endpoint:</p>
+<pre><code>GET 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;resource=https://management.azure.com/' HTTP/1.1 Metadata: true
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td>The HTTP verb, indicating you want to retrieve data from the endpoint. In this case, an OAuth access token.</td>
+</tr>
+<tr>
+<td><code>http://169.254.169.254/metadata/identity/oauth2/token</code></td>
+<td>The managed identities for Azure resources endpoint for the Instance Metadata Service.</td>
+</tr>
+<tr>
+<td><code>api-version</code></td>
+<td>A query string parameter, indicating the API version for the IMDS endpoint. Please use API version <code>2018-02-01</code> or greater.</td>
+</tr>
+<tr>
+<td><code>resource</code></td>
+<td>A query string parameter, indicating the App ID URI of the target resource. It also appears in the <code>aud</code> (audience) claim of the issued token. This example requests a token to access Azure Resource Manager, which has an App ID URI of <code>https://management.azure.com/</code>.</td>
+</tr>
+<tr>
+<td><code>Metadata</code></td>
+<td>An HTTP request header field, required by managed identities for Azure resources as a mitigation against Server Side Request Forgery (SSRF) attack. This value must be set to “true”, in all lower case.</td>
+</tr>
+</tbody>
+</table><p>Sample response:</p>
+<pre><code>HTTP/1.1 200 OK
+Content-Type: application/json
+{
+  "access_token": "eyJ0eXAi...",
+  "refresh_token": "",
+  "expires_in": "3599",
+  "expires_on": "1506484173",
+  "not_before": "1506480273",
+  "resource": "https://management.azure.com/",
+  "token_type": "Bearer"
+}
+</code></pre>
+<h5 id="get-a-token-by-using-c">Get a token by using C#</h5>
+<p>The code sample below builds the request to acquire a token, calls the endpoint, and then extracts the token from the response.</p>
+<pre><code>using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Web.Script.Serialization; 
+
+// Build request to acquire managed identities for Azure resources token
+HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;resource=https://management.azure.com/");
+request.Headers["Metadata"] = "true";
+request.Method = "GET";
+
+try
+{
+    // Call /token endpoint
+    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+    // Pipe response Stream to a StreamReader, and extract access token
+    StreamReader streamResponse = new StreamReader(response.GetResponseStream()); 
+    string stringResponse = streamResponse.ReadToEnd();
+    JavaScriptSerializer j = new JavaScriptSerializer();
+    Dictionary&lt;string, string&gt; list = (Dictionary&lt;string, string&gt;) j.Deserialize(stringResponse, typeof(Dictionary&lt;string, string&gt;));
+    string accessToken = list["access_token"];
+}
+catch (Exception e)
+{
+    string errorText = String.Format("{0} \n\n{1}", e.Message, e.InnerException != null ? e.InnerException.Message : "Acquire token failed");
+}
+</code></pre>
+<h4 id="token-caching">Token caching</h4>
+<p>While the managed identities for Azure resources subsystem does cache tokens, we also recommend to implement token caching in your code. As a result, you should prepare for scenarios where the resource indicates that the token is expired.</p>
+<p>On-the-wire calls to Azure Active Directory result only when:</p>
+<ul>
+<li>Cache miss occurs due to no token in the managed identities for Azure resources subsystem cache.</li>
+<li>The cached token is expired.</li>
+</ul>
+<h4 id="retry-guidance">Retry guidance</h4>
+<p>It is recommended to retry if you receive a 404, 429, or 5xx error code. Throttling limits apply to the number of calls made to the IMDS endpoint. When the throttling threshold is exceeded, IMDS endpoint limits any further requests while the throttle is in effect. During this period, the IMDS endpoint will return the HTTP status code 429 (“Too many requests”), and the requests fail.</p>
+<h2 id="implement-azure-app-configuration">Implement Azure App Configuration</h2>
+<h3 id="explore-the-azure-app-configuration-service">Explore the Azure App Configuration service</h3>
+<p>Azure App Configuration provides a service to centrally manage application settings and feature flags.</p>
+<p>Modern programs, especially programs running in a cloud, generally have many components that are distributed in nature. Spreading configuration settings across these components can lead to hard-to-troubleshoot errors during an application deployment. Use App Configuration to store all the settings for your application and secure their access in one place.</p>
+<p>App Configuration offers the following benefits:</p>
+<ul>
+<li>A fully managed service that can be set up in minutes</li>
+<li>Flexible key representations and mappings</li>
+<li>Tagging with labels</li>
+<li>Point-in-time replay of settings</li>
+<li>Dedicated UI for feature flag management</li>
+<li>Comparison of two sets of configurations on custom-defined dimensions</li>
+<li>Enhanced security through Azure-managed identities</li>
+<li>Complete data encryptions, at rest or in transit</li>
+<li>Native integration with popular frameworks</li>
+</ul>
+<p>App Configuration complements Azure Key Vault, which is used to store application secrets. App Configuration makes it easier to implement the following scenarios:</p>
+<ul>
+<li>Centralize management and distribution of hierarchical configuration data for different environments and geographies</li>
+<li>Dynamically change application settings without the need to redeploy or restart an application</li>
+<li>Control feature availability in real-time</li>
+</ul>
+<h4 id="use-app-configuration">Use App Configuration</h4>
+<p>The easiest way to add an App Configuration store to your application is through a client library that Microsoft provides.</p>
+<ul>
+<li>App Configuration provider for .NET Core</li>
+<li>App Configuration builder for .NET</li>
+<li>App Configuration client for Spring Cloud</li>
+<li>App Configuration REST API</li>
+</ul>
+<h3 id="create-paired-keys-and-values">Create paired keys and values</h3>
+<h4 id="keys">Keys</h4>
+<p>Keys serve as the name for key-value pairs and are used to store and retrieve corresponding values. It’s a common practice to organize keys into a hierarchical namespace by using a character delimiter, such as <code>/</code> or <code>:</code>.</p>
+<p>Keys stored in App Configuration are <strong>case-sensitive</strong>, unicode-based strings.</p>
+<p>You can use any unicode character in key names entered into App Configuration except for <code>*</code>, <code>,</code>, and <code>\</code>. These characters are reserved. There’s a combined size limit of 10,000 characters on a key-value pair.</p>
+<h3 id="design-key-namespaces">Design key namespaces</h3>
+<p>There are two general approaches to naming keys used for configuration data: flat or hierarchical. These methods are similar from an application usage standpoint, but hierarchical naming offers a number of advantages:</p>
+<ul>
+<li>Easier to read. Instead of one long sequence of characters, delimiters in a hierarchical key name function as spaces in a sentence.</li>
+<li>Easier to manage. A key name hierarchy represents logical groups of configuration data.</li>
+<li>Easier to use. It’s simpler to write a query that pattern-matches keys in a hierarchical structure and retrieves only a portion of configuration data.</li>
+</ul>
+<p>Below are some examples of how you can structure your key names into a hierarchy:</p>
+<ul>
+<li>
+<p>Based on component services</p>
+<pre><code>AppName:Service1:ApiEndpoint
+AppName:Service2:ApiEndpoint
+</code></pre>
+</li>
+<li>
+<p>Based on deployment regions</p>
+<pre><code>AppName:Region1:DbEndpoint
+AppName:Region2:DbEndpoint
+</code></pre>
+</li>
+</ul>
+<h3 id="label-keys">Label keys</h3>
+<p>Key values in App Configuration can optionally have a label attribute. Labels are used to differentiate key values with the same key. A key <em>app1</em> with labels <em>A</em> and <em>B</em> forms two separate keys in an App Configuration store. By default, the label for a key value is empty, or <code>null</code>.</p>
+<p>Label provides a convenient way to create variants of a key. A common use of labels is to specify multiple environments for the same key:</p>
+<pre><code>Key = AppName:DbEndpoint &amp; Label = Test
+Key = AppName:DbEndpoint &amp; Label = Staging
+Key = AppName:DbEndpoint &amp; Label = Production
+</code></pre>
+<h3 id="version-key-values">Version key values</h3>
+<p>App Configuration doesn’t version key values automatically as they’re modified. Use labels as a way to create multiple versions of a key value. For example, you can input an application version number or a Git commit ID in labels to identify key values associated with a particular software build.</p>
+<h3 id="query-key-values">Query key values</h3>
+<p>Each key value is uniquely identified by its key plus a label that can be <code>null</code>. You query an App Configuration store for key values by specifying a pattern. The App Configuration store returns all key values that match the pattern and their corresponding values and attributes.</p>
+<h2 id="values">Values</h2>
+<p>Values assigned to keys are also unicode strings. You can use all unicode characters for values. There’s an optional user-defined content type associated with each value. Use this attribute to store information, for example an encoding scheme, about a value that helps your application to process it properly.</p>
+<p>Configuration data stored in an App Configuration store, which includes all keys and values, is encrypted at rest and in transit. App Configuration isn’t a replacement solution for Azure Key Vault. Don’t store application secrets in it.</p>
 <hr>
-<h2 id="next-unit-discover-the-managed-identities-authentication-flow">Next unit: Discover the managed identities authentication flow</h2>
-<p><a href="https://docs.microsoft.com/en-us/learn/paths/implement-azure-functions/">AZ-204: Implement Azure Functions - Learn | Microsoft Docs</a></p>
+<h2 id="next-unit-manage-application-features">Next unit: Manage application features</h2>
+<p><a href="https://docs.microsoft.com/en-us/training/modules/implement-azure-app-configuration/4-app-configuration-feature-management/">Continue</a></p>
+<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-app-configuration.create-paired-keys-values&amp;documentId=0cac7fc4-0e38-b7a8-8950-28134253cbc7&amp;versionIndependentDocumentId=187e23c6-9de2-ca8f-bcc7-9a49be3e3cf2&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-app-configuration%2F3-keys-values.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-app-configuration%2F3-keys-values&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-app-configuration.create-paired-keys-values&amp;documentId=0cac7fc4-0e38-b7a8-8950-28134253cbc7&amp;versionIndependentDocumentId=187e23c6-9de2-ca8f-bcc7-9a49be3e3cf2&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-app-configuration%2F3-keys-values.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-app-configuration%2F3-keys-values&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
+<h2 id="manage-application-features---training--microsoft-docs.md">Manage application features - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
+<ul>
+<li>3 minutes</li>
+</ul>
+<p>Feature management is a modern software-development practice that decouples feature release from code deployment and enables quick changes to feature availability on demand. It uses a technique called feature flags (also known as feature toggles, feature switches, and so on) to dynamically administer a feature’s lifecycle.</p>
+<h2 id="basic-concepts-1">Basic concepts</h2>
+<p>Here are several new terms related to feature management:</p>
+<ul>
+<li><strong>Feature flag</strong>: A feature flag is a variable with a binary state of <em>on</em> or <em>off</em>. The feature flag also has an associated code block. The state of the feature flag triggers whether the code block runs or not.</li>
+<li><strong>Feature manager</strong>: A feature manager is an application package that handles the lifecycle of all the feature flags in an application. The feature manager typically provides additional functionality, such as caching feature flags and updating their states.</li>
+<li><strong>Filter</strong>: A filter is a rule for evaluating the state of a feature flag. A user group, a device or browser type, a geographic location, and a time window are all examples of what a filter can represent.</li>
+</ul>
+<p>An effective implementation of feature management consists of at least two components working in concert:</p>
+<ul>
+<li>An application that makes use of feature flags.</li>
+<li>A separate repository that stores the feature flags and their current states.</li>
+</ul>
+<p>How these components interact is illustrated in the following examples.</p>
+<h2 id="feature-flag-usage-in-code-1">Feature flag usage in code</h2>
+<p>The basic pattern for implementing feature flags in an application is simple. You can think of a feature flag as a Boolean state variable used with an <code>if</code> conditional statement in your code:</p>
+<pre><code>if (featureFlag) {
+    // Run the following code
+}
+</code></pre>
+<p>In this case, if <code>featureFlag</code> is set to <code>True</code>, the enclosed code block is executed; otherwise, it’s skipped. You can set the value of <code>featureFlag</code> statically, as in the following code example:</p>
+<pre><code>bool featureFlag = true;
+</code></pre>
+<p>You can also evaluate the flag’s state based on certain rules:</p>
+<pre><code>bool featureFlag = isBetaUser();
+</code></pre>
+<p>A slightly more complicated feature flag pattern includes an <code>else</code> statement as well:</p>
+<pre><code>if (featureFlag) {
+    // This following code will run if the featureFlag value is true
+} else {
+    // This following code will run if the featureFlag value is false
+}
+</code></pre>
+<h2 id="feature-flag-declaration-1">Feature flag declaration</h2>
+<p>Each feature flag has two parts: a name and a list of one or more filters that are used to evaluate if a feature’s state is <em>on</em> (that is, when its value is <code>True</code>). A filter defines a use case for when a feature should be turned on.</p>
+<p>When a feature flag has multiple filters, the filter list is traversed in order until one of the filters determines the feature should be enabled. At that point, the feature flag is <em>on</em>, and any remaining filter results are skipped. If no filter indicates the feature should be enabled, the feature flag is <em>off</em>.</p>
+<p>The feature manager supports <em>appsettings.json</em> as a configuration source for feature flags. The following example shows how to set up feature flags in a JSON file:</p>
+<pre><code>"FeatureManagement": {
+    "FeatureA": true, // Feature flag set to on
+    "FeatureB": false, // Feature flag set to off
+    "FeatureC": {
+        "EnabledFor": [
+            {
+                "Name": "Percentage",
+                "Parameters": {
+                    "Value": 50
+                }
+            }
+        ]
+    }
+}
+</code></pre>
+<h2 id="feature-flag-repository-1">Feature flag repository</h2>
+<p>To use feature flags effectively, you need to externalize all the feature flags used in an application. This approach allows you to change feature flag states without modifying and redeploying the application itself.</p>
+<p>Azure App Configuration is designed to be a centralized repository for feature flags. You can use it to define different kinds of feature flags and manipulate their states quickly and confidently. You can then use the App Configuration libraries for various programming language frameworks to easily access these feature flags from your application.</p>
 
     </div>
   </div>
