@@ -89,10 +89,11 @@
 <li><a href="#az-204-implement-api-management">AZ-204 Implement API Management</a>
 <ul>
 <li><a href="#explore-api-management">Explore API Management</a></li>
-<li><a href="#understanding-policy-configuration">Understanding policy configuration</a></li>
-<li><a href="#examples">Examples</a></li>
-<li><a href="#next-unit-create-advanced-policies">Next unit: Create advanced policies</a></li>
-<li><a href="#create-advanced-policies---training--microsoft-docs.md">Create advanced policies - Training  Microsoft Docs.md</a></li>
+<li><a href="#retry">Retry</a>
+<ul>
+<li></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -3800,11 +3801,8 @@ Key = AppName:DbEndpoint &amp; Label = Production
 <li>Logging and monitoring</li>
 <li>Response caching</li>
 </ul>
-<p><strong>hier weiter</strong></p>
 <h3 id="explore-api-management-policies">Explore API Management policies</h3>
-<p>In Azure API Management, policies are a powerful capability of the system that allow the publisher to change the behavior of the API through configuration. Policies are a collection of Statements that are executed sequentially on the request or response of an API.</p>
-<p>Policies are applied inside the gateway which sits between the API consumer and the managed API. The gateway receives all requests and usually forwards them unaltered to the underlying API. However a policy can apply changes to both the inbound request and outbound response. Policy expressions can be used as attribute values or text values in any of the API Management policies, unless the policy specifies otherwise.</p>
-<h2 id="understanding-policy-configuration">Understanding policy configuration</h2>
+<h4 id="understanding-policy-configuration">Understanding policy configuration</h4>
 <p>The policy definition is a simple XML document that describes a sequence of inbound and outbound statements. The XML can be edited directly in the definition window.</p>
 <p>The configuration is divided into <code>inbound</code>, <code>backend</code>, <code>outbound</code>, and <code>on-error</code>. The series of specified policy statements is executed in order for a request and a response.</p>
 <pre><code>&lt;policies&gt;
@@ -3824,8 +3822,8 @@ Key = AppName:DbEndpoint &amp; Label = Production
 &lt;/policies&gt;
 </code></pre>
 <p>If there is an error during the processing of a request, any remaining steps in the <code>inbound</code>, <code>backend</code>, or <code>outbound</code> sections are skipped and execution jumps to the statements in the <code>on-error</code> section. By placing policy statements in the <code>on-error</code> section you can review the error by using the <code>context.LastError</code> property, inspect and customize the error response using the <code>set-body</code> policy, and configure what happens if an error occurs.</p>
-<h2 id="examples">Examples</h2>
-<h3 id="apply-policies-specified-at-different-scopes">Apply policies specified at different scopes</h3>
+<h4 id="examples">Examples</h4>
+<h5 id="apply-policies-specified-at-different-scopes">Apply policies specified at different scopes</h5>
 <p>If you have a policy at the global level and a policy configured for an API, then whenever that particular API is used both policies will be applied. API Management allows for deterministic ordering of combined policy statements via the base element.</p>
 <pre><code>&lt;policies&gt;
     &lt;inbound&gt;
@@ -3836,7 +3834,7 @@ Key = AppName:DbEndpoint &amp; Label = Production
 &lt;/policies&gt;
 </code></pre>
 <p>In the example policy definition above, the <code>cross-domain</code> statement would execute before any higher policies which would in turn, be followed by the <code>find-and-replace</code> policy.</p>
-<h3 id="filter-response-content">Filter response content</h3>
+<h5 id="filter-response-content">Filter response content</h5>
 <p>The policy defined in example below demonstrates how to filter data elements from the response payload based on the product associated with the request.</p>
 <p>The snippet assumes that response content is formatted as JSON and contains root-level properties named “minutely”, “hourly”, “daily”, “flags”.</p>
 <pre><code>&lt;policies&gt;
@@ -3850,7 +3848,6 @@ Key = AppName:DbEndpoint &amp; Label = Production
     &lt;base /&gt;
     &lt;choose&gt;
       &lt;when condition="@(context.Response.StatusCode == 200 &amp;&amp; context.Product.Name.Equals("Starter"))"&gt;
-        &lt;!-- NOTE that we are not using preserveContent=true when deserializing response body stream into a JSON object since we don't intend to access it again. See details on https://docs.microsoft.com/azure/api-management/api-management-transformation-policies#SetBody --&gt;
         &lt;set-body&gt;
           @{
             var response = context.Response.Body.As&lt;JObject&gt;();
@@ -3868,23 +3865,61 @@ Key = AppName:DbEndpoint &amp; Label = Production
   &lt;/on-error&gt;
 &lt;/policies&gt;
 </code></pre>
-<hr>
-<h2 id="next-unit-create-advanced-policies">Next unit: Create advanced policies</h2>
-<p><a href="https://docs.microsoft.com/en-us/training/modules/explore-api-management/5-create-advanced-policies/">Continue</a></p>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.explore-api-management.policies&amp;documentId=a9bc8f57-963a-76fa-8de7-70fbb120c07e&amp;versionIndependentDocumentId=332f5e7c-01ed-adf0-fe28-2a8e0bd501b8&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fexplore-api-management%2F4-api-management-policies.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fexplore-api-management%2F4-api-management-policies&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.explore-api-management.policies&amp;documentId=a9bc8f57-963a-76fa-8de7-70fbb120c07e&amp;versionIndependentDocumentId=332f5e7c-01ed-adf0-fe28-2a8e0bd501b8&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fexplore-api-management%2F4-api-management-policies.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fexplore-api-management%2F4-api-management-policies&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
-<h2 id="create-advanced-policies---training--microsoft-docs.md">Create advanced policies - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
-<ul>
-<li>3 minutes</li>
-</ul>
-<p>This unit provides a reference for the following API Management policies:</p>
-<ul>
-<li>Control flow - Conditionally applies policy statements based on the results of the evaluation of Boolean expressions.</li>
-<li>Forward request - Forwards the request to the backend service.</li>
-<li>Limit concurrency - Prevents enclosed policies from executing by more than the specified number of requests at a time.</li>
-<li>Log to Event Hub - Sends messages in the specified format to an Event Hub defined by a Logger entity.</li>
-<li>Mock response - Aborts pipeline execution and returns a mocked response directly to the caller.</li>
-<li>Retry - Retries execution of the enclosed policy state</li>
-</ul>
+<h3 id="create-advanced-policies">Create advanced policies</h3>
+<h4 id="control-flow">Control flow</h4>
+<pre><code>&lt;choose&gt;
+    &lt;when condition="Boolean expression | Boolean constant"&gt;
+        &lt;!— one or more policy statements to be applied if the above condition is true  --&gt;
+    &lt;/when&gt;
+    &lt;when condition="Boolean expression | Boolean constant"&gt;
+        &lt;!— one or more policy statements to be applied if the above condition is true  --&gt;
+    &lt;/when&gt;
+    &lt;otherwise&gt;
+        &lt;!— one or more policy statements to be applied if none of the above conditions are true  --&gt;
+&lt;/otherwise&gt;
+&lt;/choose&gt;
+</code></pre>
+<p>The control flow policy must contain at least one <code>&lt;when/&gt;</code> element. The <code>&lt;otherwise/&gt;</code> element is optional.</p>
+<h4 id="forward-request">Forward request</h4>
+<p>The <code>forward-request</code> policy forwards the incoming request to the backend service specified in the request context. The backend service URL is specified in the API settings and can be changed using the set backend service policy.</p>
+<p>Removing this policy results in the request not being forwarded to the backend service and the policies in the outbound section are evaluated immediately upon the successful completion of the policies in the inbound section.</p>
+<pre><code>&lt;forward-request timeout="time in seconds" follow-redirects="true | false"/&gt;
+</code></pre>
+<h4 id="limit-concurrency">Limit concurrency</h4>
+<p>The <code>limit-concurrency</code> policy prevents enclosed policies from executing by more than the specified number of requests at any time. Upon exceeding that number, new requests will fail immediately with a <em>429 Too Many Requests</em> status code.</p>
+<pre><code>&lt;limit-concurrency key="expression" max-count="number"&gt;
+        &lt;!— nested policy statements --&gt;
+&lt;/limit-concurrency&gt;
+</code></pre>
+<h4 id="log-to-event-hub">Log to Event Hub</h4>
+<p>The <code>log-to-eventhub</code> policy sends messages in the specified format to an Event Hub defined by a Logger entity.</p>
+<pre><code>&lt;log-to-eventhub logger-id="id of the logger entity" partition-id="index of the partition where messages are sent" partition-key="value used for partition assignment"&gt;
+  Expression returning a string to be logged
+&lt;/log-to-eventhub&gt;
+</code></pre>
+<h4 id="mock-response">Mock response</h4>
+<pre><code>&lt;mock-response status-code="code" content-type="media type"/&gt;
+</code></pre>
+<h2 id="retry">Retry</h2>
+<p>The <code>retry</code> policy executes its child policies once and then retries their execution until the retry <code>condition</code> becomes <code>false</code> or retry <code>count</code> is exhausted.</p>
+<pre><code>&lt;retry
+    condition="boolean expression or literal"
+    count="number of retry attempts"
+    interval="retry interval in seconds"
+    max-interval="maximum retry interval in seconds"
+    delta="retry interval delta in seconds"
+    first-fast-retry="boolean expression or literal"&gt;
+        &lt;!-- One or more child policies. No restrictions --&gt;
+&lt;/retry&gt;
+</code></pre>
+<h4 id="return-response">Return response</h4>
+<p>The <code>return-response</code> policy aborts pipeline execution and returns either a default or custom response to the caller.</p>
+<pre><code>&lt;return-response response-variable-name="existing context variable"&gt;
+  &lt;set-header/&gt;
+  &lt;set-body/&gt;
+  &lt;set-status/&gt;
+&lt;/return-response&gt;
+</code></pre>
 
     </div>
   </div>
