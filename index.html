@@ -84,8 +84,15 @@
 <li><a href="#implement-azure-key-vault">Implement Azure Key Vault</a></li>
 <li><a href="#implement-managed-identities">Implement managed identities</a></li>
 <li><a href="#implement-azure-app-configuration">Implement Azure App Configuration</a></li>
-<li><a href="#use-private-endpoints-for-azure-app-configuration">Use private endpoints for Azure App Configuration</a></li>
-<li><a href="#managed-identities">Managed identities</a></li>
+</ul>
+</li>
+<li><a href="#az-204-implement-api-management">AZ-204 Implement API Management</a>
+<ul>
+<li><a href="#explore-api-management">Explore API Management</a></li>
+<li><a href="#understanding-policy-configuration">Understanding policy configuration</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#next-unit-create-advanced-policies">Next unit: Create advanced policies</a></li>
+<li><a href="#create-advanced-policies---training--microsoft-docs.md">Create advanced policies - Training  Microsoft Docs.md</a></li>
 </ul>
 </li>
 </ul>
@@ -3663,11 +3670,10 @@ Key = AppName:DbEndpoint &amp; Label = Production
 <h4 id="feature-flag-repository-1">Feature flag repository</h4>
 <p>To use feature flags effectively, you need to externalize all the feature flags used in an application. This approach allows you to change feature flag states without modifying and redeploying the application itself.</p>
 <p>Azure App Configuration is designed to be a centralized repository for feature flags. You can use it to define different kinds of feature flags and manipulate their states quickly and confidently. You can then use the App Configuration libraries for various programming language frameworks to easily access these feature flags from your application.</p>
-<p><strong>hier weiter</strong></p>
 <h3 id="secure-app-configuration-data">Secure app configuration data</h3>
 <h4 id="encrypt-configuration-data-by-using-customer-managed-keys">Encrypt configuration data by using customer-managed keys</h4>
 <p>Azure App Configuration encrypts sensitive information at rest using a 256-bit AES encryption key provided by Microsoft. Every App Configuration instance has its own encryption key managed by the service and used to encrypt sensitive information. Sensitive information includes the values found in key-value pairs. When customer-managed key capability is enabled, App Configuration uses a managed identity assigned to the App Configuration instance to authenticate with Azure Active Directory. The managed identity then calls Azure Key Vault and wraps the App Configuration instance’s encryption key. The wrapped encryption key is then stored and the unwrapped encryption key is cached within App Configuration for one hour. App Configuration refreshes the unwrapped version of the App Configuration instance’s encryption key hourly. This ensures availability under normal operating conditions.</p>
-<h3 id="enable-customer-managed-key-capability">Enable customer-managed key capability</h3>
+<h5 id="enable-customer-managed-key-capability">Enable customer-managed key capability</h5>
 <p>The following components are required to successfully enable the customer-managed key capability for Azure App Configuration:</p>
 <ul>
 <li>Standard tier Azure App Configuration instance</li>
@@ -3679,43 +3685,206 @@ Key = AppName:DbEndpoint &amp; Label = Production
 <li>Assign a managed identity to the Azure App Configuration instance</li>
 <li>Grant the identity <code>GET</code>, <code>WRAP</code>, and <code>UNWRAP</code> permissions in the target Key Vault’s access policy.</li>
 </ol>
-<h2 id="use-private-endpoints-for-azure-app-configuration">Use private endpoints for Azure App Configuration</h2>
-<p>You can use private endpoints for Azure App Configuration to allow clients on a virtual network (VNet) to securely access data over a private link. The private endpoint uses an IP address from the VNet address space for your App Configuration store. Network traffic between the clients on the VNet and the App Configuration store traverses over the VNet using a private link on the Microsoft backbone network, eliminating exposure to the public internet.</p>
+<h4 id="use-private-endpoints-for-azure-app-configuration">Use private endpoints for Azure App Configuration</h4>
+<p>You can use private endpoints for Azure App Configuration to allow clients on a virtual network (VNet) to securely access data over a private link. Network traffic between the clients on the VNet and the App Configuration store traverses over the VNet using a private link on the Microsoft backbone network, eliminating exposure to the public internet.</p>
 <p>Using private endpoints for your App Configuration store enables you to:</p>
 <ul>
 <li>Secure your application configuration details by configuring the firewall to block all connections to App Configuration on the public endpoint.</li>
 <li>Increase security for the virtual network (VNet) ensuring data doesn’t escape from the VNet.</li>
 <li>Securely connect to the App Configuration store from on-premises networks that connect to the VNet using VPN or ExpressRoutes with private-peering.</li>
 </ul>
-<h3 id="private-endpoints-for-app-configuration">Private endpoints for App Configuration</h3>
-<p>When creating a private endpoint, you must specify the App Configuration store to which it connects. If you have multiple App Configuration stores, you need a separate private endpoint for each store. Azure relies upon DNS resolution to route connections from the VNet to the configuration store over a private link. You can quickly find connections strings in the Azure portal by selecting your App Configuration store, then selecting <strong>Settings</strong> &gt; <strong>Access Keys</strong>.</p>
-<h3 id="dns-changes-for-private-endpoints">DNS changes for private endpoints</h3>
-<p>When you create a private endpoint, the DNS CNAME resource record for the configuration store is updated to an alias in a subdomain with the prefix <code>privatelink</code>. Azure also creates a <a href="https://docs.microsoft.com/en-us/azure/dns/private-dns-overview">private DNS zone</a> corresponding to the <code>privatelink</code> subdomain, with the DNS A resource records for the private endpoints.</p>
+<h5 id="private-endpoints-for-app-configuration">Private endpoints for App Configuration</h5>
+<p>When creating a private endpoint, you must specify the App Configuration store to which it connects. If you have multiple App Configuration stores, you need a separate private endpoint for each store.</p>
+<h5 id="dns-changes-for-private-endpoints">DNS changes for private endpoints</h5>
+<p>When you create a private endpoint, the DNS CNAME resource record for the configuration store is updated to an alias in a subdomain with the prefix <code>privatelink</code>. Azure also creates a private DNS zone corresponding to the <code>privatelink</code> subdomain, with the DNS A resource records for the private endpoints.</p>
 <p>When you resolve the endpoint URL from within the VNet hosting the private endpoint, it resolves to the private endpoint of the store. When resolved from outside the VNet, the endpoint URL resolves to the public endpoint. When you create a private endpoint, the public endpoint is disabled.</p>
-<h2 id="managed-identities">Managed identities</h2>
-<p>A managed identity from Azure Active Directory (AAD) allows Azure App Configuration to easily access other AAD-protected resources, such as Azure Key Vault. The identity is managed by the Azure platform. It does not require you to provision or rotate any secrets.</p>
+<h4 id="managed-identities">Managed identities</h4>
+<p>A managed identity from Azure Active Directory (AAD) allows Azure App Configuration to easily access other AAD-protected resources, such as Azure Key Vault.</p>
 <p>Your application can be granted two types of identities:</p>
 <ul>
 <li>A <strong>system-assigned identity</strong> is tied to your configuration store. It’s deleted if your configuration store is deleted. A configuration store can only have one system-assigned identity.</li>
 <li>A <strong>user-assigned identity</strong> is a standalone Azure resource that can be assigned to your configuration store. A configuration store can have multiple user-assigned identities.</li>
 </ul>
-<h3 id="add-a-system-assigned-identity">Add a system-assigned identity</h3>
-<p>To set up a managed identity using the Azure CLI, use the <code>az appconfig identity assign</code> command against an existing configuration store. The following Azure CLI example creates a system-assigned identity for an Azure App Configuration store named <code>myTestAppConfigStore</code>.</p>
+<h5 id="add-a-system-assigned-identity">Add a system-assigned identity</h5>
+<p>To set up a managed identity using the Azure CLI, use the <code>az appconfig identity assign</code> command against an existing configuration store.</p>
 <pre><code>az appconfig identity assign \ 
     --name myTestAppConfigStore \ 
     --resource-group myResourceGroup
 </code></pre>
-<h3 id="add-a-user-assigned-identity">Add a user-assigned identity</h3>
-<p>Creating an App Configuration store with a user-assigned identity requires that you create the identity and then assign its resource identifier to your store. The following Azure CLI examples create a user-assigned identity called <code>myUserAssignedIdentity</code> and assigns it to an Azure App Configuration store named <code>myTestAppConfigStore</code>.</p>
-<p>Create an identity using the <code>az identity create</code> command:</p>
+<h5 id="add-a-user-assigned-identity">Add a user-assigned identity</h5>
+<p>Creating an App Configuration store with a user-assigned identity requires that you create the identity and then assign its resource identifier to your store.</p>
 <pre><code>az identity create --resource-group myResourceGroup --name myUserAssignedIdentity
 </code></pre>
-<p>Assign the new user-assigned identity to the <code>myTestAppConfigStore</code> configuration store:</p>
 <pre><code>az appconfig identity assign --name myTestAppConfigStore \ 
     --resource-group myResourceGroup \ 
     --identities /subscriptions/[subscription id]/resourcegroups/myResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myUserAssignedIdentity
 </code></pre>
-<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-app-configuration.secure-data&amp;documentId=a29c09ed-fdbc-6d54-6486-3faf3f9cd3e4&amp;versionIndependentDocumentId=db81a330-14a7-6da7-38cb-96bc460ba7e9&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-app-configuration%2F5-secure-app-configuration-data.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-app-configuration%2F5-secure-app-configuration-data&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.implement-azure-app-configuration.secure-data&amp;documentId=a29c09ed-fdbc-6d54-6486-3faf3f9cd3e4&amp;versionIndependentDocumentId=db81a330-14a7-6da7-38cb-96bc460ba7e9&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fimplement-azure-app-configuration%2F5-secure-app-configuration-data.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fimplement-azure-app-configuration%2F5-secure-app-configuration-data&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
+<h1 id="az-204-implement-api-management">AZ-204 Implement API Management</h1>
+<h2 id="explore-api-management">Explore API Management</h2>
+<h3 id="discover-the-api-management-service">Discover the API Management service</h3>
+<p>API Management provides the core functionality to ensure a successful API program through developer engagement, business insights, analytics, security, and protection. Each API consists of one or more operations, and each API can be added to one or more products. To use an API, developers subscribe to a product that contains that API, and then they can call the API’s operation, subject to any usage policies that may be in effect.</p>
+<p>The system is made up of the following components:</p>
+<ul>
+<li>The <strong>API gateway</strong> is the endpoint that:
+<ul>
+<li>Accepts API calls and routes them to your backend(s).</li>
+<li>Verifies API keys, JWT tokens, certificates, and other credentials.</li>
+<li>Enforces usage quotas and rate limits.</li>
+<li>Transforms your API on the fly without code modifications.</li>
+<li>Caches backend responses where set up.</li>
+<li>Logs call metadata for analytics purposes.</li>
+</ul>
+</li>
+<li>The <strong>Azure portal</strong> is the administrative interface where you set up your API program. Use it to:
+<ul>
+<li>Define or import API schema.</li>
+<li>Package APIs into products.</li>
+<li>Set up policies like quotas or transformations on the APIs.</li>
+<li>Get insights from analytics.</li>
+<li>Manage users.</li>
+</ul>
+</li>
+<li>The <strong>Developer portal</strong> serves as the main web presence for developers, where they can:
+<ul>
+<li>Read API documentation.</li>
+<li>Try out an API via the interactive console.</li>
+<li>Create an account and subscribe to get API keys.</li>
+<li>Access analytics on their own usage.</li>
+</ul>
+</li>
+</ul>
+<h4 id="products">Products</h4>
+<p>Products are how APIs are surfaced to developers. Products in API Management have one or more APIs, and are configured with a title, description, and terms of use. Products can be <strong>Open</strong> or <strong>Protected</strong>. Protected products must be subscribed to before they can be used, while open products can be used without a subscription.</p>
+<h4 id="groups">Groups</h4>
+<ul>
+<li><strong>Administrators</strong> - Azure subscription administrators are members of this group. Administrators manage API Management service instances, creating the APIs, operations, and products that are used by developers.</li>
+<li><strong>Developers</strong> - Authenticated developer portal users fall into this group. Developers are the customers that build applications using your APIs. Developers are granted access to the developer portal and build applications that call the operations of an API.</li>
+<li><strong>Guests</strong> - Unauthenticated developer portal users, such as prospective customers visiting the developer portal of an API Management instance fall into this group. They can be granted certain read-only access, such as the ability to view APIs but not call them.</li>
+</ul>
+<p>In addition to these system groups, administrators can create custom groups.</p>
+<h4 id="developers">Developers</h4>
+<p>Developers represent the user accounts in an API Management service instance.</p>
+<h4 id="policies">Policies</h4>
+<p>Policies are a powerful capability of API Management that allow the Azure portal to change the behavior of the API through configuration. Policies are a collection of statements that are executed sequentially on the request or response of an API (e.g. JSON to XML conversion).</p>
+<h4 id="developer-portal">Developer portal</h4>
+<p>The developer portal is where developers can learn about your APIs, view and call operations, and subscribe to products.</p>
+<h4 id="explore-api-gateways">Explore API gateways</h4>
+<p>Your solution may contain several front- and back-end services. In this scenario, how does a client know what endpoints to call? What happens when new services are introduced, or existing services are refactored? How do services handle SSL termination, authentication, and other concerns? An <em>API gateway</em> can help to address these challenges.</p>
+<p><img src="https://docs.microsoft.com/en-us/training/wwl-azure/explore-api-management/media/api-gateway.png" alt="Diagram of an API gateway."></p>
+<p>An API gateway sits between clients and services. It acts as a reverse proxy, routing requests from clients to services. It may also perform various cross-cutting tasks such as authentication, SSL termination, and rate limiting. If you don’t deploy a gateway, clients must send requests directly to front-end services. However, there are some potential problems with exposing services directly to clients:</p>
+<ul>
+<li>It can result in complex client code. The client must keep track of multiple endpoints, and handle failures in a resilient way.</li>
+<li>It creates coupling between the client and the backend.</li>
+<li>A single operation might require calls to multiple services. That can result in multiple network round trips between the client and the server, adding significant latency.</li>
+<li>Each public-facing service must handle concerns such as authentication, SSL, and client rate limiting.</li>
+<li>Services must expose a client-friendly protocol such as HTTP or WebSocket. This limits the choice of communication protocols.</li>
+<li>Services with public endpoints are a potential attack surface, and must be hardened.</li>
+</ul>
+<p>A gateway helps to address these issues by decoupling clients from services.</p>
+<ul>
+<li>
+<p><strong>Gateway routing</strong>: Use the gateway as a reverse proxy to route requests to one or more backend services.</p>
+</li>
+<li>
+<p><strong>Gateway aggregation</strong>: Use the gateway to aggregate multiple individual requests into a single request.</p>
+</li>
+<li>
+<p><strong>Gateway Offloading</strong>: Use the gateway to offload functionality from individual services to the gateway, particularly cross-cutting concerns.</p>
+</li>
+</ul>
+<p>Here are some examples of functionality that could be offloaded to a gateway:</p>
+<ul>
+<li>SSL termination</li>
+<li>Authentication</li>
+<li>Client rate limiting (throttling)</li>
+<li>Logging and monitoring</li>
+<li>Response caching</li>
+</ul>
+<p><strong>hier weiter</strong></p>
+<h3 id="explore-api-management-policies">Explore API Management policies</h3>
+<p>In Azure API Management, policies are a powerful capability of the system that allow the publisher to change the behavior of the API through configuration. Policies are a collection of Statements that are executed sequentially on the request or response of an API.</p>
+<p>Policies are applied inside the gateway which sits between the API consumer and the managed API. The gateway receives all requests and usually forwards them unaltered to the underlying API. However a policy can apply changes to both the inbound request and outbound response. Policy expressions can be used as attribute values or text values in any of the API Management policies, unless the policy specifies otherwise.</p>
+<h2 id="understanding-policy-configuration">Understanding policy configuration</h2>
+<p>The policy definition is a simple XML document that describes a sequence of inbound and outbound statements. The XML can be edited directly in the definition window.</p>
+<p>The configuration is divided into <code>inbound</code>, <code>backend</code>, <code>outbound</code>, and <code>on-error</code>. The series of specified policy statements is executed in order for a request and a response.</p>
+<pre><code>&lt;policies&gt;
+  &lt;inbound&gt;
+    &lt;!-- statements to be applied to the request go here --&gt;
+  &lt;/inbound&gt;
+  &lt;backend&gt;
+    &lt;!-- statements to be applied before the request is forwarded to 
+         the backend service go here --&gt;
+  &lt;/backend&gt;
+  &lt;outbound&gt;
+    &lt;!-- statements to be applied to the response go here --&gt;
+  &lt;/outbound&gt;
+  &lt;on-error&gt;
+    &lt;!-- statements to be applied if there is an error condition go here --&gt;
+  &lt;/on-error&gt;
+&lt;/policies&gt;
+</code></pre>
+<p>If there is an error during the processing of a request, any remaining steps in the <code>inbound</code>, <code>backend</code>, or <code>outbound</code> sections are skipped and execution jumps to the statements in the <code>on-error</code> section. By placing policy statements in the <code>on-error</code> section you can review the error by using the <code>context.LastError</code> property, inspect and customize the error response using the <code>set-body</code> policy, and configure what happens if an error occurs.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="apply-policies-specified-at-different-scopes">Apply policies specified at different scopes</h3>
+<p>If you have a policy at the global level and a policy configured for an API, then whenever that particular API is used both policies will be applied. API Management allows for deterministic ordering of combined policy statements via the base element.</p>
+<pre><code>&lt;policies&gt;
+    &lt;inbound&gt;
+        &lt;cross-domain /&gt;
+        &lt;base /&gt;
+        &lt;find-and-replace from="xyz" to="abc" /&gt;
+    &lt;/inbound&gt;
+&lt;/policies&gt;
+</code></pre>
+<p>In the example policy definition above, the <code>cross-domain</code> statement would execute before any higher policies which would in turn, be followed by the <code>find-and-replace</code> policy.</p>
+<h3 id="filter-response-content">Filter response content</h3>
+<p>The policy defined in example below demonstrates how to filter data elements from the response payload based on the product associated with the request.</p>
+<p>The snippet assumes that response content is formatted as JSON and contains root-level properties named “minutely”, “hourly”, “daily”, “flags”.</p>
+<pre><code>&lt;policies&gt;
+  &lt;inbound&gt;
+    &lt;base /&gt;
+  &lt;/inbound&gt;
+  &lt;backend&gt;
+    &lt;base /&gt;
+  &lt;/backend&gt;
+  &lt;outbound&gt;
+    &lt;base /&gt;
+    &lt;choose&gt;
+      &lt;when condition="@(context.Response.StatusCode == 200 &amp;&amp; context.Product.Name.Equals("Starter"))"&gt;
+        &lt;!-- NOTE that we are not using preserveContent=true when deserializing response body stream into a JSON object since we don't intend to access it again. See details on https://docs.microsoft.com/azure/api-management/api-management-transformation-policies#SetBody --&gt;
+        &lt;set-body&gt;
+          @{
+            var response = context.Response.Body.As&lt;JObject&gt;();
+            foreach (var key in new [] {"minutely", "hourly", "daily", "flags"}) {
+            response.Property (key).Remove ();
+           }
+          return response.ToString();
+          }
+    &lt;/set-body&gt;
+      &lt;/when&gt;
+    &lt;/choose&gt;    
+  &lt;/outbound&gt;
+  &lt;on-error&gt;
+    &lt;base /&gt;
+  &lt;/on-error&gt;
+&lt;/policies&gt;
+</code></pre>
+<hr>
+<h2 id="next-unit-create-advanced-policies">Next unit: Create advanced policies</h2>
+<p><a href="https://docs.microsoft.com/en-us/training/modules/explore-api-management/5-create-advanced-policies/">Continue</a></p>
+<p>Need help? See our <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.explore-api-management.policies&amp;documentId=a9bc8f57-963a-76fa-8de7-70fbb120c07e&amp;versionIndependentDocumentId=332f5e7c-01ed-adf0-fe28-2a8e0bd501b8&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fexplore-api-management%2F4-api-management-policies.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fexplore-api-management%2F4-api-management-policies&amp;author=jeffko">troubleshooting guide</a> or provide specific feedback by <a href="https://docs.microsoft.com/en-us/training/support/troubleshooting?uid=learn.wwl.explore-api-management.policies&amp;documentId=a9bc8f57-963a-76fa-8de7-70fbb120c07e&amp;versionIndependentDocumentId=332f5e7c-01ed-adf0-fe28-2a8e0bd501b8&amp;contentPath=%2FMicrosoftDocs%2Flearn-pr%2Fblob%2Flive%2Flearn-pr%2Fwwl-azure%2Fexplore-api-management%2F4-api-management-policies.yml&amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Ftraining%2Fmodules%2Fexplore-api-management%2F4-api-management-policies&amp;author=jeffko#report-feedback">reporting an issue</a>.</p>
+<h2 id="create-advanced-policies---training--microsoft-docs.md">Create advanced policies - Training  Microsoft <a href="http://Docs.md">Docs.md</a></h2>
+<ul>
+<li>3 minutes</li>
+</ul>
+<p>This unit provides a reference for the following API Management policies:</p>
+<ul>
+<li>Control flow - Conditionally applies policy statements based on the results of the evaluation of Boolean expressions.</li>
+<li>Forward request - Forwards the request to the backend service.</li>
+<li>Limit concurrency - Prevents enclosed policies from executing by more than the specified number of requests at a time.</li>
+<li>Log to Event Hub - Sends messages in the specified format to an Event Hub defined by a Logger entity.</li>
+<li>Mock response - Aborts pipeline execution and returns a mocked response directly to the caller.</li>
+<li>Retry - Retries execution of the enclosed policy state</li>
+</ul>
 
     </div>
   </div>
